@@ -1,0 +1,107 @@
+[
+  {
+    "id": "tourism-1",
+    "category": "tourism",
+    "name": "Historic City Museum",
+    "district": "City Center",
+    "rating": 4.8,
+    "description": "Explore the rich history of our city through interactive exhibits and artifacts dating back centuries.",
+    "latitude": -6.200000,
+    "longitude": 106.816666,
+    "image": "tourism_museum",
+    "admissionFee": "Free",
+    "operatingHours": "9:00 AM - 5:00 PM"
+  },
+  {
+    "id": "tourism-2",
+    "category": "tourism",
+    "name": "Waterfront Park",
+    "district": "Waterfront",
+    "rating": 4.5,
+    "description": "Beautiful waterfront park perfect for morning jogging, family picnics, and evening strolls.",
+    "latitude": -6.210000,
+    "longitude": 106.826666,
+    "image": "tourism_park",
+    "admissionFee": "Free",
+    "operatingHours": "24/7"
+  },
+  {
+    "id": "tourism-3",
+    "category": "tourism",
+    "name": "Mountain View Observatory",
+    "district": "Mountain District",
+    "rating": 4.9,
+    "description": "Breathtaking panoramic views of the entire city from this elevated observatory point.",
+    "latitude": -6.190000,
+    "longitude": 106.806666,
+    "image": "tourism_observatory",
+    "admissionFee": "$5",
+    "operatingHours": "6:00 AM - 8:00 PM"
+  },
+  {
+    "id": "tourism-4",
+    "category": "tourism",
+    "name": "Art Gallery District",
+    "district": "North District",
+    "rating": 4.3,
+    "description": "Contemporary art gallery featuring local and international artists with rotating exhibitions.",
+    "latitude": -6.180000,
+    "longitude": 106.796666,
+    "image": "tourism_gallery",
+    "admissionFee": "$8",
+    "operatingHours": "10:00 AM - 7:00 PM"
+  },
+  {
+    "id": "tourism-5",
+    "category": "tourism",
+    "name": "Botanical Gardens",
+    "district": "City Center",
+    "rating": 4.6,
+    "description": "Lush botanical gardens showcasing native and exotic plants with guided tours available.",
+    "latitude": -6.195000,
+    "longitude": 106.815666,
+    "image": "tourism_garden",
+    "admissionFee": "$3",
+    "operatingHours": "8:00 AM - 6:00 PM"
+  },
+  {
+    "id": "tourism-6",
+    "category": "tourism",
+    "name": "Heritage Walking Tour",
+    "district": "City Center",
+    "rating": 4.7,
+    "description": "Guided walking tour through historic neighborhoods with knowledgeable local guides.",
+    "latitude": -6.200000,
+    "longitude": 106.816666,
+    "image": "tourism_walking",
+    "admissionFee": "$12",
+    "operatingHours": "9:00 AM, 2:00 PM, 4:00 PM"
+  },
+  {
+    "id": "tourism-7",
+    "category": "tourism",
+    "name": "River Cruise",
+    "district": "Waterfront",
+    "rating": 4.4,
+    "description": "Scenic river cruise with dinner options and live music entertainment.",
+    "latitude": -6.205000,
+    "longitude": 106.820666,
+    "image": "tourism_cruise",
+    "admissionFee": "$25",
+    "operatingHours": "6:00 PM - 9:00 PM"
+  },
+  {
+    "id": "tourism-8",
+    "category": "tourism",
+    "name": "Adventure Park",
+    "district": "Mountain District",
+    "rating": 4.2,
+    "description": "Thrilling adventure park with zip lines, rock climbing, and obstacle courses.",
+    "latitude": -6.185000,
+    "longitude": 106.800666,
+    "image": "tourism_adventure",
+    "admissionFee": "$15",
+    "operatingHours": "9:00 AM - 5:00 PM"
+  }
+]
+

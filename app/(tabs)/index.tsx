@@ -1,98 +1,302 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React from 'react';
+import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Hero } from '@/components/ui/Hero';
+import { PlaceholderImage } from '@/components/ui/PlaceholderImage';
+import { SectionTitle } from '@/components/ui/SectionTitle';
+import { getColors } from '@/constants/colors';
+import { useAppStore } from '@/lib/store';
+import { Item } from '@/types';
+
+const DiscoverCard = ({ 
+  title, 
+  icon, 
+  color, 
+  description,
+  onPress 
+}: { 
+  title: string; 
+  icon: keyof typeof Ionicons.glyphMap; 
+  color: string; 
+  description: string;
+  onPress: () => void; 
+}) => {
+  const colorScheme = useColorScheme();
+  const colors = getColors(colorScheme === 'dark');
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.discoverCard,
+        { backgroundColor: colors.card, shadowColor: colors.shadow }
+      ]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <LinearGradient
+        colors={[color + '20', color + '10']}
+        style={styles.iconContainer}
+      >
+        <Ionicons name={icon} size={32} color={color} />
+      </LinearGradient>
+      <Text style={[styles.discoverTitle, { color: colors.text }]}>
+        {title}
+      </Text>
+      <Text style={[styles.discoverDescription, { color: colors.textMuted }]}>
+        {description}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+const TrendingCard = ({ item }: { item: Item }) => {
+  const colorScheme = useColorScheme();
+  const colors = getColors(colorScheme === 'dark');
+  const addToRecent = useAppStore((state) => state.addToRecent);
+
+  const handlePress = () => {
+    addToRecent(item.id);
+    router.push(`/${item.category}/${item.id}`);
+  };
+
+
+  return (
+    <TouchableOpacity
+      style={[styles.trendingCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}
+      onPress={handlePress}
+      activeOpacity={0.8}
+    >
+      <View style={styles.trendingImageContainer}>
+        <PlaceholderImage 
+          category={item.category}
+          name={item.name}
+          style={styles.trendingImage}
+        />
+        <View style={styles.ratingBadge}>
+          <Ionicons name="star" size={12} color="#FBBF24" />
+          <Text style={styles.ratingText}>
+            {item.rating.toFixed(1)}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.trendingContent}>
+        <Text style={[styles.trendingTitle, { color: colors.text }]} numberOfLines={1}>
+          {item.name}
+        </Text>
+        <View style={styles.locationRow}>
+          <Ionicons name="location-outline" size={12} color={colors.textMuted} />
+          <Text style={[styles.trendingDistrict, { color: colors.textMuted }]} numberOfLines={1}>
+            {item.district}
+          </Text>
+        </View>
+        <TouchableOpacity style={[styles.viewButton, { backgroundColor: colors.primary + '20' }]}>
+          <Text style={[styles.viewButtonText, { color: colors.primary }]}>
+            View Details
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const colorScheme = useColorScheme();
+  const colors = getColors(colorScheme === 'dark');
+  const { getTrendingItems } = useAppStore();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const trendingItems = getTrendingItems();
+
+  const discoverItems = [
+    { 
+      title: 'Tourism', 
+      icon: 'camera-outline' as const, 
+      color: colors.primary, 
+      description: 'Beautiful places to visit',
+      route: '/tourism' 
+    },
+    { 
+      title: 'Culinary', 
+      icon: 'restaurant-outline' as const, 
+      color: colors.secondary, 
+      description: 'Delicious local food',
+      route: '/culinary' 
+    },
+    { 
+      title: 'Hotels', 
+      icon: 'bed-outline' as const, 
+      color: colors.accent, 
+      description: 'Comfortable stays',
+      route: '/hotels' 
+    },
+    { 
+      title: 'Events', 
+      icon: 'calendar-outline' as const, 
+      color: '#F59E0B', 
+      description: 'Exciting events',
+      route: '/events' 
+    },
+  ];
+
+  return (
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
+      <Hero 
+        title="Explore the Best Tourism"
+        subtitle="in Your City"
+      />
+      
+      <View style={styles.content}>
+        <SectionTitle 
+          title="🔥 Trending Destinations" 
+          subtitle="Most popular places this week"
+        />
+        
+        <FlatList
+          data={trendingItems}
+          renderItem={({ item }) => <TrendingCard item={item} />}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.trendingList}
+        />
+        
+        <SectionTitle 
+          title="Discover More" 
+          subtitle="Explore different categories"
+        />
+        
+        <View style={styles.discoverGrid}>
+          {discoverItems.map((item, index) => (
+            <DiscoverCard
+              key={index}
+              title={item.title}
+              icon={item.icon}
+              color={item.color}
+              description={item.description}
+              onPress={() => router.push(item.route)}
+            />
+          ))}
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: 20,
+  },
+  trendingList: {
+    paddingRight: 20,
+  },
+  trendingCard: {
+    width: 220,
+    marginRight: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  trendingImageContainer: {
+    position: 'relative',
+    height: 140,
+  },
+  trendingImage: {
+    width: '100%',
+    height: '100%',
+  },
+  ratingBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
-  stepContainer: {
-    gap: 8,
+  ratingText: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginLeft: 4,
+    color: '#1F2937',
+  },
+  trendingContent: {
+    padding: 16,
+  },
+  trendingTitle: {
+    fontSize: 16,
+    fontWeight: '700',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  trendingDistrict: {
+    fontSize: 13,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  viewButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  viewButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  discoverGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  discoverCard: {
+    width: '48%',
+    padding: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  iconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  discoverTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  discoverDescription: {
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
+    opacity: 0.7,
   },
 });
