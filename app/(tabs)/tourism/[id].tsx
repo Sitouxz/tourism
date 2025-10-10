@@ -8,6 +8,7 @@ import { RatingBadge } from '@/components/ui/RatingBadge';
 import { SectionTitle } from '@/components/ui/SectionTitle';
 import { getColors } from '@/constants/colors';
 import { useAppStore } from '@/lib/store';
+import { useTourStore } from '@/lib/tour-store';
 import { Item } from '@/types';
 
 export default function TourismDetailScreen() {
@@ -16,18 +17,29 @@ export default function TourismDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   
   const { data, isFavorite, toggleFavorite, getNearbyItems } = useAppStore();
+  const { getTourByDestinationId, loadTourRoutes } = useTourStore();
   const [item, setItem] = useState<Item | null>(null);
   const [nearbyItems, setNearbyItems] = useState<Item[]>([]);
+  const [hasTourRoute, setHasTourRoute] = useState(false);
 
   useEffect(() => {
-    if (id && data.tourism) {
-      const foundItem = data.tourism.find(item => item.id === id);
-      if (foundItem) {
-        setItem(foundItem);
-        const nearby = getNearbyItems(foundItem, 'tourism');
-        setNearbyItems(nearby);
+    const initializeData = async () => {
+      if (id && data.tourism) {
+        const foundItem = data.tourism.find(item => item.id === id);
+        if (foundItem) {
+          setItem(foundItem);
+          const nearby = getNearbyItems(foundItem, 'tourism');
+          setNearbyItems(nearby);
+          
+          // Load tour routes and check if this destination has a tour
+          await loadTourRoutes();
+          const tourRoute = getTourByDestinationId(id);
+          setHasTourRoute(!!tourRoute);
+        }
       }
-    }
+    };
+
+    initializeData();
   }, [id, data]);
 
   const handleOpenMaps = () => {
@@ -47,6 +59,27 @@ export default function TourismDetailScreen() {
 
   const handleNearbyPress = (itemId: string) => {
     router.push(`/tourism/${itemId}`);
+  };
+
+  const handleStartTour = async () => {
+    if (!id) return;
+    
+    const tourRoute = getTourByDestinationId(id);
+    if (!tourRoute) {
+      Alert.alert('No Tour Available', 'This destination does not have a guided tour route.');
+      return;
+    }
+
+    try {
+      await useTourStore.getState().startTour(tourRoute.id);
+      router.push({
+        pathname: '/tour-tracking',
+        params: { tourId: tourRoute.id }
+      });
+    } catch (error) {
+      console.error('Error starting tour:', error);
+      Alert.alert('Error', 'Failed to start tour. Please try again.');
+    }
   };
 
   if (!item) {
@@ -88,6 +121,16 @@ export default function TourismDetailScreen() {
           </Text>
           <LocationRow district={item.district} />
         </View>
+
+        {hasTourRoute && (
+          <TouchableOpacity
+            style={[styles.startTourButton, { backgroundColor: colors.accent }]}
+            onPress={handleStartTour}
+          >
+            <Ionicons name="compass" size={24} color="#FFFFFF" />
+            <Text style={styles.startTourButtonText}>Start Guided Tour</Text>
+          </TouchableOpacity>
+        )}
 
         <View style={styles.actions}>
           <TouchableOpacity
@@ -215,6 +258,28 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 8,
+  },
+  startTourButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    marginBottom: 20,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  startTourButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    marginLeft: 8,
   },
   actions: {
     flexDirection: 'row',

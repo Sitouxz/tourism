@@ -1,0 +1,259 @@
+[
+  {
+    "id": "route-mountain-observatory",
+    "destinationId": "tourism-3",
+    "destinationName": "Mountain View Observatory",
+    "checkpoints": [
+      {
+        "id": "checkpoint-1",
+        "name": "City Center Terminal",
+        "description": "Starting point for your mountain adventure. Here you can find local transportation and gather supplies.",
+        "latitude": -6.200000,
+        "longitude": 106.816666,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Best time to start: 6:00 AM. Bring water and snacks."
+      },
+      {
+        "id": "checkpoint-2",
+        "name": "Mountain Base Station",
+        "description": "Base camp for mountain expeditions. Rest area with facilities and equipment rental.",
+        "latitude": -6.185000,
+        "longitude": 106.810000,
+        "type": "accommodation",
+        "order": 2,
+        "estimatedTime": 30,
+        "notes": "Last chance to rent equipment and use restroom facilities."
+      },
+      {
+        "id": "checkpoint-3",
+        "name": "Halfway Rest Point",
+        "description": "Scenic rest area with panoramic views. Perfect spot for photos and a short break.",
+        "latitude": -6.187500,
+        "longitude": 106.808000,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 45,
+        "notes": "Great photo opportunity. Take a 10-minute break here."
+      }
+    ],
+    "transports": [
+      {
+        "id": "transport-1",
+        "name": "Mountain Shuttle Bus",
+        "type": "bus",
+        "description": "Regular shuttle service from city center to mountain base",
+        "price": "$5",
+        "schedule": ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00"],
+        "duration": "30 minutes",
+        "bookingUrl": "https://example.com/mountain-shuttle",
+        "departurePoint": "City Center Terminal",
+        "arrivalPoint": "Mountain Base Station"
+      }
+    ],
+    "totalEstimatedTime": 120,
+    "difficulty": "medium",
+    "description": "A scenic journey to the mountain observatory with multiple checkpoints and transportation options."
+  },
+  {
+    "id": "route-waterfront-park",
+    "destinationId": "tourism-2",
+    "destinationName": "Waterfront Park",
+    "checkpoints": [
+      {
+        "id": "checkpoint-4",
+        "name": "Central Plaza",
+        "description": "Main city plaza with shopping centers and restaurants. Starting point for waterfront journey.",
+        "latitude": -6.200000,
+        "longitude": 106.816666,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Free parking available. Many dining options nearby."
+      },
+      {
+        "id": "checkpoint-5",
+        "name": "Harbor View Point",
+        "description": "Beautiful harbor view with historic lighthouse. Great for photos and relaxation.",
+        "latitude": -6.205000,
+        "longitude": 106.820000,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 20,
+        "notes": "Historic lighthouse built in 1890. Free admission."
+      },
+      {
+        "id": "checkpoint-6",
+        "name": "Seafood Market",
+        "description": "Local seafood market with fresh catches. Try local specialties.",
+        "latitude": -6.208000,
+        "longitude": 106.822000,
+        "type": "restaurant",
+        "order": 3,
+        "estimatedTime": 35,
+        "notes": "Best seafood in the city. Try the grilled fish."
+      }
+    ],
+    "transports": [
+      {
+        "id": "transport-2",
+        "name": "Harbor Ferry",
+        "type": "boat",
+        "description": "Scenic ferry ride across the harbor",
+        "price": "$8",
+        "schedule": ["09:00", "11:00", "13:00", "15:00", "17:00"],
+        "duration": "25 minutes",
+        "bookingUrl": "https://example.com/harbor-ferry",
+        "departurePoint": "Harbor View Point",
+        "arrivalPoint": "Waterfront Park Pier"
+      }
+    ],
+    "totalEstimatedTime": 80,
+    "difficulty": "easy",
+    "description": "A relaxing journey through the waterfront area with harbor views and local seafood."
+  },
+  {
+    "id": "route-art-gallery",
+    "destinationId": "tourism-4",
+    "destinationName": "Art Gallery District",
+    "checkpoints": [
+      {
+        "id": "checkpoint-7",
+        "name": "North District Station",
+        "description": "Main transportation hub for the northern part of the city. Modern station with good facilities.",
+        "latitude": -6.180000,
+        "longitude": 106.796666,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Free WiFi available. ATM and convenience store on site."
+      },
+      {
+        "id": "checkpoint-8",
+        "name": "Cultural Center",
+        "description": "Historic cultural center with rotating exhibitions and local art displays.",
+        "latitude": -6.182000,
+        "longitude": 106.798000,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 15,
+        "notes": "Free guided tours available at 10:00 AM and 2:00 PM."
+      },
+      {
+        "id": "checkpoint-9",
+        "name": "Artist Quarter",
+        "description": "Quaint neighborhood with local artist studios and craft shops.",
+        "latitude": -6.184000,
+        "longitude": 106.799000,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 25,
+        "notes": "Many artists offer live demonstrations. Great for unique souvenirs."
+      }
+    ],
+    "transports": [],
+    "totalEstimatedTime": 60,
+    "difficulty": "easy",
+    "description": "A cultural journey through the art district with local artists and exhibitions."
+  },
+  {
+    "id": "route-botanical-gardens",
+    "destinationId": "tourism-5",
+    "destinationName": "Botanical Gardens",
+    "checkpoints": [
+      {
+        "id": "checkpoint-10",
+        "name": "City Center Metro Station",
+        "description": "Main metro station in the city center. Convenient starting point with good connections.",
+        "latitude": -6.200000,
+        "longitude": 106.816666,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Metro runs every 10 minutes. Ticket machines accept cards and cash."
+      },
+      {
+        "id": "checkpoint-11",
+        "name": "University District",
+        "description": "Historic university area with beautiful architecture and student cafes.",
+        "latitude": -6.195000,
+        "longitude": 106.815000,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 20,
+        "notes": "Student cafes offer affordable meals. Beautiful campus architecture."
+      },
+      {
+        "id": "checkpoint-12",
+        "name": "Research Center",
+        "description": "Botanical research center with educational exhibits about local flora.",
+        "latitude": -6.193000,
+        "longitude": 106.814000,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 35,
+        "notes": "Educational tours available. Learn about local plant species."
+      }
+    ],
+    "transports": [],
+    "totalEstimatedTime": 75,
+    "difficulty": "easy",
+    "description": "An educational journey through the university district to the botanical gardens."
+  },
+  {
+    "id": "route-heritage-walking",
+    "destinationId": "tourism-6",
+    "destinationName": "Heritage Walking Tour",
+    "checkpoints": [
+      {
+        "id": "checkpoint-13",
+        "name": "Old Town Square",
+        "description": "Historic town square dating back to the 18th century. Starting point for heritage tour.",
+        "latitude": -6.200000,
+        "longitude": 106.816666,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Historic buildings with colonial architecture. Tourist information center available."
+      },
+      {
+        "id": "checkpoint-14",
+        "name": "Colonial Museum",
+        "description": "Small museum showcasing local colonial history and artifacts.",
+        "latitude": -6.201000,
+        "longitude": 106.817000,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 20,
+        "notes": "Admission: $3. Audio guides available in multiple languages."
+      },
+      {
+        "id": "checkpoint-15",
+        "name": "Heritage Houses",
+        "description": "Row of preserved colonial houses with traditional architecture and gardens.",
+        "latitude": -6.202000,
+        "longitude": 106.818000,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 40,
+        "notes": "Some houses are open for public viewing. Beautiful traditional gardens."
+      },
+      {
+        "id": "checkpoint-16",
+        "name": "Traditional Market",
+        "description": "Historic market area with traditional crafts and local products.",
+        "latitude": -6.203000,
+        "longitude": 106.819000,
+        "type": "restaurant",
+        "order": 4,
+        "estimatedTime": 60,
+        "notes": "Try local street food and traditional crafts. Bargaining is common."
+      }
+    ],
+    "transports": [],
+    "totalEstimatedTime": 120,
+    "difficulty": "easy",
+    "description": "A comprehensive walking tour through the historic heritage district."
+  }
+]

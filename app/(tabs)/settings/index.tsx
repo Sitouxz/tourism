@@ -140,6 +140,18 @@ export default function SettingsScreen() {
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Tour Management
+          </Text>
+          <SettingItem
+            icon="map-outline"
+            title="Tour History"
+            subtitle="View your tour history and progress"
+            onPress={() => router.push('/tour-history')}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
             Data Management
           </Text>
           <SettingItem
