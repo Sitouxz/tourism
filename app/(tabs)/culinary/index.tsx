@@ -35,6 +35,8 @@ export default function CulinaryScreen() {
       district={item.district}
       rating={item.rating}
       description={item.description}
+      image={item.image}
+      category="culinary"
       priceRange={item.priceRange}
       onPress={() => handleItemPress(item.id)}
     />

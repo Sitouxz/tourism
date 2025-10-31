@@ -1,259 +1,600 @@
 [
   {
-    "id": "route-mountain-observatory",
-    "destinationId": "tourism-3",
-    "destinationName": "Mountain View Observatory",
+    "id": "route-pulau-para",
+    "destinationId": "tourism-1",
+    "destinationName": "Pulau Para (Negeri 8 Pantai)",
     "checkpoints": [
       {
-        "id": "checkpoint-1",
-        "name": "City Center Terminal",
-        "description": "Starting point for your mountain adventure. Here you can find local transportation and gather supplies.",
-        "latitude": -6.200000,
-        "longitude": 106.816666,
+        "id": "checkpoint-para-1",
+        "name": "Pelabuhan Tahuna",
+        "description": "Titik keberangkatan menuju Pulau Para. Tersedia perahu dan speedboat untuk menyeberang.",
+        "latitude": 3.609000,
+        "longitude": 125.489000,
         "type": "landmark",
         "order": 1,
         "estimatedTime": 0,
-        "notes": "Best time to start: 6:00 AM. Bring water and snacks."
+        "notes": "Perahu berangkat setiap jam. Persiapkan peralatan snorkeling dan kamera underwater."
       },
       {
-        "id": "checkpoint-2",
-        "name": "Mountain Base Station",
-        "description": "Base camp for mountain expeditions. Rest area with facilities and equipment rental.",
-        "latitude": -6.185000,
-        "longitude": 106.810000,
-        "type": "accommodation",
+        "id": "checkpoint-para-2",
+        "name": "Pantai Pulau Para",
+        "description": "Pantai dengan pasir putih halus dan air yang jernih. Spot pertama untuk snorkeling.",
+        "latitude": 3.748000,
+        "longitude": 125.598000,
+        "type": "landmark",
         "order": 2,
-        "estimatedTime": 30,
-        "notes": "Last chance to rent equipment and use restroom facilities."
+        "estimatedTime": 45,
+        "notes": "Spot terbaik untuk snorkeling. Terumbu karang masih sangat indah."
       },
       {
-        "id": "checkpoint-3",
-        "name": "Halfway Rest Point",
-        "description": "Scenic rest area with panoramic views. Perfect spot for photos and a short break.",
-        "latitude": -6.187500,
-        "longitude": 106.808000,
+        "id": "checkpoint-para-3",
+        "name": "Kawasan Konservasi P3K Tatoareng",
+        "description": "Area konservasi dengan keanekaragaman hayati laut yang tinggi.",
+        "latitude": 3.750000,
+        "longitude": 125.600000,
         "type": "landmark",
         "order": 3,
-        "estimatedTime": 45,
-        "notes": "Great photo opportunity. Take a 10-minute break here."
+        "estimatedTime": 90,
+        "notes": "Masuk 300 Besar ADWI. Jaga kebersihan dan tidak merusak terumbu karang."
       }
     ],
     "transports": [
       {
-        "id": "transport-1",
-        "name": "Mountain Shuttle Bus",
-        "type": "bus",
-        "description": "Regular shuttle service from city center to mountain base",
-        "price": "$5",
-        "schedule": ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00"],
-        "duration": "30 minutes",
-        "bookingUrl": "https://example.com/mountain-shuttle",
-        "departurePoint": "City Center Terminal",
-        "arrivalPoint": "Mountain Base Station"
+        "id": "transport-para-1",
+        "name": "Perahu Tradisional",
+        "type": "boat",
+        "description": "Perahu tradisional menuju Pulau Para",
+        "price": "Rp 50.000",
+        "schedule": ["07:00", "09:00", "11:00", "13:00", "15:00"],
+        "duration": "45 menit",
+        "bookingUrl": "",
+        "departurePoint": "Pelabuhan Tahuna",
+        "arrivalPoint": "Pulau Para"
       }
     ],
-    "totalEstimatedTime": 120,
+    "totalEstimatedTime": 180,
     "difficulty": "medium",
-    "description": "A scenic journey to the mountain observatory with multiple checkpoints and transportation options."
+    "description": "Perjalanan wisata ke Pulau Para dengan 8 pantai indah dan snorkeling di kawasan konservasi."
   },
   {
-    "id": "route-waterfront-park",
+    "id": "route-gunung-api-mahengetang",
     "destinationId": "tourism-2",
-    "destinationName": "Waterfront Park",
+    "destinationName": "Gunung Api Bawah Laut Mahengetang",
     "checkpoints": [
       {
-        "id": "checkpoint-4",
-        "name": "Central Plaza",
-        "description": "Main city plaza with shopping centers and restaurants. Starting point for waterfront journey.",
-        "latitude": -6.200000,
-        "longitude": 106.816666,
+        "id": "checkpoint-volcano-1",
+        "name": "Dive Center Tahuna",
+        "description": "Pusat penyelaman dengan instruktur bersertifikat dan peralatan lengkap.",
+        "latitude": 3.608500,
+        "longitude": 125.488500,
         "type": "landmark",
         "order": 1,
         "estimatedTime": 0,
-        "notes": "Free parking available. Many dining options nearby."
+        "notes": "Wajib briefing keselamatan. Sertifikat diving direkomendasikan."
       },
       {
-        "id": "checkpoint-5",
-        "name": "Harbor View Point",
-        "description": "Beautiful harbor view with historic lighthouse. Great for photos and relaxation.",
-        "latitude": -6.205000,
-        "longitude": 106.820000,
+        "id": "checkpoint-volcano-2",
+        "name": "Lokasi Penyelaman Mahengetang",
+        "description": "Titik penyelaman di atas gunung api bawah laut yang aktif.",
+        "latitude": 3.800000,
+        "longitude": 125.580000,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 60,
+        "notes": "Kedalaman 15-30 meter. Ikuti instruksi pemandu. Pengalaman unik diving di gunung api aktif."
+      }
+    ],
+    "transports": [
+      {
+        "id": "transport-volcano-1",
+        "name": "Boat Diving",
+        "type": "boat",
+        "description": "Kapal khusus untuk aktivitas diving",
+        "price": "Rp 300.000 (paket lengkap)",
+        "schedule": ["08:00", "13:00"],
+        "duration": "1 jam + 2 jam diving",
+        "bookingUrl": "",
+        "departurePoint": "Dive Center",
+        "arrivalPoint": "Mahengetang"
+      }
+    ],
+    "totalEstimatedTime": 240,
+    "difficulty": "hard",
+    "description": "Eksplorasi gunung api bawah laut Banuawuhu dengan diving yang menantang."
+  },
+  {
+    "id": "route-mangrove-tahuna",
+    "destinationId": "tourism-3",
+    "destinationName": "Kawasan Mangrove Tahuna",
+    "checkpoints": [
+      {
+        "id": "checkpoint-mangrove-1",
+        "name": "Pintu Masuk Mangrove",
+        "description": "Gerbang masuk kawasan wisata mangrove dengan pusat informasi.",
+        "latitude": 3.609500,
+        "longitude": 125.489200,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Dapatkan informasi tentang ekosistem mangrove dari guide lokal."
+      },
+      {
+        "id": "checkpoint-mangrove-2",
+        "name": "Jembatan Kayu Mangrove",
+        "description": "Jembatan kayu sepanjang 500m melintasi hutan mangrove.",
+        "latitude": 3.609722,
+        "longitude": 125.489444,
         "type": "landmark",
         "order": 2,
         "estimatedTime": 20,
-        "notes": "Historic lighthouse built in 1890. Free admission."
+        "notes": "Spot foto terbaik. Perhatikan burung-burung lokal."
       },
       {
-        "id": "checkpoint-6",
-        "name": "Seafood Market",
-        "description": "Local seafood market with fresh catches. Try local specialties.",
-        "latitude": -6.208000,
-        "longitude": 106.822000,
+        "id": "checkpoint-mangrove-3",
+        "name": "Area Kuliner Mangrove",
+        "description": "Kawasan kuliner dengan berbagai warung seafood segar.",
+        "latitude": 3.609722,
+        "longitude": 125.489444,
         "type": "restaurant",
         "order": 3,
-        "estimatedTime": 35,
-        "notes": "Best seafood in the city. Try the grilled fish."
+        "estimatedTime": 40,
+        "notes": "Coba seafood bakar dengan view mangrove yang indah."
       }
     ],
-    "transports": [
-      {
-        "id": "transport-2",
-        "name": "Harbor Ferry",
-        "type": "boat",
-        "description": "Scenic ferry ride across the harbor",
-        "price": "$8",
-        "schedule": ["09:00", "11:00", "13:00", "15:00", "17:00"],
-        "duration": "25 minutes",
-        "bookingUrl": "https://example.com/harbor-ferry",
-        "departurePoint": "Harbor View Point",
-        "arrivalPoint": "Waterfront Park Pier"
-      }
-    ],
-    "totalEstimatedTime": 80,
+    "transports": [],
+    "totalEstimatedTime": 120,
     "difficulty": "easy",
-    "description": "A relaxing journey through the waterfront area with harbor views and local seafood."
+    "description": "Wisata edukasi ekowisata mangrove dengan kuliner seafood."
   },
   {
-    "id": "route-art-gallery",
-    "destinationId": "tourism-4",
-    "destinationName": "Art Gallery District",
+    "id": "route-air-terjun-kadadima",
+    "destinationId": "tourism-5",
+    "destinationName": "Air Terjun Kadadima",
     "checkpoints": [
       {
-        "id": "checkpoint-7",
-        "name": "North District Station",
-        "description": "Main transportation hub for the northern part of the city. Modern station with good facilities.",
-        "latitude": -6.180000,
-        "longitude": 106.796666,
+        "id": "checkpoint-waterfall-1",
+        "name": "Kampung Laine",
+        "description": "Kampung dengan sejarah panjang sebagai titik awal perjalanan.",
+        "latitude": 3.395000,
+        "longitude": 125.445000,
         "type": "landmark",
         "order": 1,
         "estimatedTime": 0,
-        "notes": "Free WiFi available. ATM and convenience store on site."
+        "notes": "Sewa guide lokal. Dengar cerita 'Tompohe Dalam Mangaha Laine Lohong Kadadima'."
       },
       {
-        "id": "checkpoint-8",
-        "name": "Cultural Center",
-        "description": "Historic cultural center with rotating exhibitions and local art displays.",
-        "latitude": -6.182000,
-        "longitude": 106.798000,
+        "id": "checkpoint-waterfall-2",
+        "name": "Pos 1 - Area Parkir",
+        "description": "Area parkir kendaraan sebelum trekking ke air terjun.",
+        "latitude": 3.398000,
+        "longitude": 125.448000,
         "type": "landmark",
         "order": 2,
         "estimatedTime": 15,
-        "notes": "Free guided tours available at 10:00 AM and 2:00 PM."
+        "notes": "Bawa air minum dan snack untuk perjalanan."
       },
       {
-        "id": "checkpoint-9",
-        "name": "Artist Quarter",
-        "description": "Quaint neighborhood with local artist studios and craft shops.",
-        "latitude": -6.184000,
-        "longitude": 106.799000,
+        "id": "checkpoint-waterfall-3",
+        "name": "Air Terjun Tingkat 1 Kadadima",
+        "description": "Tingkat pertama dari lima tingkat air terjun Kadadima.",
+        "latitude": 3.400000,
+        "longitude": 125.450000,
         "type": "landmark",
         "order": 3,
-        "estimatedTime": 25,
-        "notes": "Many artists offer live demonstrations. Great for unique souvenirs."
+        "estimatedTime": 45,
+        "notes": "Spot terbaik untuk berenang dan foto. Hati-hati dengan bebatuan licin. Top 500 ADWI."
       }
     ],
     "transports": [],
-    "totalEstimatedTime": 60,
-    "difficulty": "easy",
-    "description": "A cultural journey through the art district with local artists and exhibitions."
+    "totalEstimatedTime": 150,
+    "difficulty": "medium",
+    "description": "Trekking ke air terjun 5 tingkat di Kampung Laine dengan sejarah dan budaya lokal."
   },
   {
-    "id": "route-botanical-gardens",
-    "destinationId": "tourism-5",
-    "destinationName": "Botanical Gardens",
-    "checkpoints": [
-      {
-        "id": "checkpoint-10",
-        "name": "City Center Metro Station",
-        "description": "Main metro station in the city center. Convenient starting point with good connections.",
-        "latitude": -6.200000,
-        "longitude": 106.816666,
-        "type": "landmark",
-        "order": 1,
-        "estimatedTime": 0,
-        "notes": "Metro runs every 10 minutes. Ticket machines accept cards and cash."
-      },
-      {
-        "id": "checkpoint-11",
-        "name": "University District",
-        "description": "Historic university area with beautiful architecture and student cafes.",
-        "latitude": -6.195000,
-        "longitude": 106.815000,
-        "type": "landmark",
-        "order": 2,
-        "estimatedTime": 20,
-        "notes": "Student cafes offer affordable meals. Beautiful campus architecture."
-      },
-      {
-        "id": "checkpoint-12",
-        "name": "Research Center",
-        "description": "Botanical research center with educational exhibits about local flora.",
-        "latitude": -6.193000,
-        "longitude": 106.814000,
-        "type": "landmark",
-        "order": 3,
-        "estimatedTime": 35,
-        "notes": "Educational tours available. Learn about local plant species."
-      }
-    ],
-    "transports": [],
-    "totalEstimatedTime": 75,
-    "difficulty": "easy",
-    "description": "An educational journey through the university district to the botanical gardens."
-  },
-  {
-    "id": "route-heritage-walking",
+    "id": "route-pantai-pananualeng",
     "destinationId": "tourism-6",
-    "destinationName": "Heritage Walking Tour",
+    "destinationName": "Pantai Pananualeng (Batuwingkung)",
     "checkpoints": [
       {
-        "id": "checkpoint-13",
-        "name": "Old Town Square",
-        "description": "Historic town square dating back to the 18th century. Starting point for heritage tour.",
-        "latitude": -6.200000,
-        "longitude": 106.816666,
+        "id": "checkpoint-pananualeng-1",
+        "name": "Kampung Tariang Baru",
+        "description": "Kampung pesisir dekat perbatasan Filipina.",
+        "latitude": 3.695000,
+        "longitude": 125.495000,
         "type": "landmark",
         "order": 1,
         "estimatedTime": 0,
-        "notes": "Historic buildings with colonial architecture. Tourist information center available."
+        "notes": "Desa berbatasan dengan Negara tetangga Philipines."
       },
       {
-        "id": "checkpoint-14",
-        "name": "Colonial Museum",
-        "description": "Small museum showcasing local colonial history and artifacts.",
-        "latitude": -6.201000,
-        "longitude": 106.817000,
+        "id": "checkpoint-pananualeng-2",
+        "name": "Puncak Batuwingkung",
+        "description": "Puncak dengan view sunrise dan pemandangan pulau-pulau.",
+        "latitude": 3.698000,
+        "longitude": 125.498000,
         "type": "landmark",
         "order": 2,
-        "estimatedTime": 20,
-        "notes": "Admission: $3. Audio guides available in multiple languages."
+        "estimatedTime": 15,
+        "notes": "Trekking 15 menit. Datang pagi untuk sunrise terbaik."
       },
       {
-        "id": "checkpoint-15",
-        "name": "Heritage Houses",
-        "description": "Row of preserved colonial houses with traditional architecture and gardens.",
-        "latitude": -6.202000,
-        "longitude": 106.818000,
+        "id": "checkpoint-pananualeng-3",
+        "name": "Pantai Pananualeng",
+        "description": "Pantai dengan pasir putih halus dan air laut jernih.",
+        "latitude": 3.700000,
+        "longitude": 125.500000,
         "type": "landmark",
         "order": 3,
         "estimatedTime": 40,
-        "notes": "Some houses are open for public viewing. Beautiful traditional gardens."
+        "notes": "Spot snorkeling di KKP (Kawasan Konservasi Pesisir)."
       },
       {
-        "id": "checkpoint-16",
-        "name": "Traditional Market",
-        "description": "Historic market area with traditional crafts and local products.",
-        "latitude": -6.203000,
-        "longitude": 106.819000,
-        "type": "restaurant",
+        "id": "checkpoint-pananualeng-4",
+        "name": "Batu Putih Pulau Enggahai",
+        "description": "Formasi batu putih unik yang bisa dijangkau saat air surut.",
+        "latitude": 3.702000,
+        "longitude": 125.502000,
+        "type": "landmark",
         "order": 4,
-        "estimatedTime": 60,
-        "notes": "Try local street food and traditional crafts. Bargaining is common."
+        "estimatedTime": 70,
+        "notes": "20 menit perahu atau 30 menit jalan kaki saat air surut."
+      }
+    ],
+    "transports": [
+      {
+        "id": "transport-pananualeng-1",
+        "name": "Angkutan Umum",
+        "type": "bus",
+        "description": "Angkutan umum dari Tahuna ke Tariang Baru",
+        "price": "Rp 30.000",
+        "schedule": ["07:00", "10:00", "14:00"],
+        "duration": "1.5 jam",
+        "bookingUrl": "",
+        "departurePoint": "Tahuna",
+        "arrivalPoint": "Tariang Baru"
+      }
+    ],
+    "totalEstimatedTime": 180,
+    "difficulty": "medium",
+    "description": "Eksplorasi pantai dan spot unik di perbatasan dengan Filipina."
+  },
+  {
+    "id": "route-desa-hesang",
+    "destinationId": "tourism-7",
+    "destinationName": "Desa Wisata Hesang",
+    "checkpoints": [
+      {
+        "id": "checkpoint-hesang-1",
+        "name": "Entrance Desa Hesang",
+        "description": "Gerbang masuk desa wisata Hesang dengan informasi wisata.",
+        "latitude": 3.444000,
+        "longitude": 125.504000,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Desa Bersinar (Bersih Narkoba). Ramah keluarga. Top 500 ADWI."
+      },
+      {
+        "id": "checkpoint-hesang-2",
+        "name": "Pantai Pasir Putih Hesang",
+        "description": "Pantai berpasir putih dengan air laut jernih.",
+        "latitude": 3.445868,
+        "longitude": 125.506095,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 15,
+        "notes": "Spot untuk snorkeling dan berenang."
+      },
+      {
+        "id": "checkpoint-hesang-3",
+        "name": "Area Mangrove Hesang",
+        "description": "Hutan mangrove yang tumbuh hampir di seluruh pesisir pantai.",
+        "latitude": 3.446500,
+        "longitude": 125.507000,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 45,
+        "notes": "Edukasi ekosistem mangrove. Bisa melihat kepiting dan burung."
+      }
+    ],
+    "transports": [
+      {
+        "id": "transport-hesang-1",
+        "name": "Angkutan Umum",
+        "type": "bus",
+        "description": "Angkutan umum dari Tahuna ke Kec. Tamako",
+        "price": "Rp 20.000",
+        "schedule": ["07:00", "10:00", "13:00", "16:00"],
+        "duration": "45 menit",
+        "bookingUrl": "",
+        "departurePoint": "Terminal Tahuna",
+        "arrivalPoint": "Desa Hesang"
+      }
+    ],
+    "totalEstimatedTime": 150,
+    "difficulty": "easy",
+    "description": "Wisata desa dengan pantai, mangrove, dan budaya lokal."
+  },
+  {
+    "id": "route-desa-lenganeng",
+    "destinationId": "tourism-8",
+    "destinationName": "Desa Lenganeng (Negeri Seribu Pedang)",
+    "checkpoints": [
+      {
+        "id": "checkpoint-lenganeng-1",
+        "name": "Entrance Lenganeng",
+        "description": "Pintu masuk kampung Lenganeng di ketinggian 20-75 mdpl.",
+        "latitude": 3.648000,
+        "longitude": 125.508000,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Udara sejuk, cocok untuk pertanian. Negeri Seribu Pedang."
+      },
+      {
+        "id": "checkpoint-lenganeng-2",
+        "name": "Workshop Pandai Besi",
+        "description": "Workshop pengrajin pandai besi tradisional turun temurun.",
+        "latitude": 3.649000,
+        "longitude": 125.509000,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 20,
+        "notes": "Lihat langsung pembuatan parang dan pisau. Laki-laki bekerja di rumah, wanita di kebun."
+      },
+      {
+        "id": "checkpoint-lenganeng-3",
+        "name": "Puncak Lenganeng",
+        "description": "Puncak kampung dengan view kota Tahuna.",
+        "latitude": 3.650000,
+        "longitude": 125.510000,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 45,
+        "notes": "Pemandangan Ibukota Kabupaten Sangihe dari ketinggian."
       }
     ],
     "transports": [],
     "totalEstimatedTime": 120,
+    "difficulty": "medium",
+    "description": "Wisata budaya pandai besi tradisional dengan view kota Tahuna."
+  },
+  {
+    "id": "route-pulau-bebalang",
+    "destinationId": "tourism-9",
+    "destinationName": "Pulau Bebalang",
+    "checkpoints": [
+      {
+        "id": "checkpoint-bebalang-1",
+        "name": "Pelabuhan Manganitu",
+        "description": "Pelabuhan keberangkatan menuju Pulau Bebalang.",
+        "latitude": 3.380000,
+        "longitude": 125.465000,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Perahu berangkat setiap hari. Bawa bekal untuk perjalanan 1 jam."
+      },
+      {
+        "id": "checkpoint-bebalang-2",
+        "name": "Dermaga Pulau Bebalang",
+        "description": "Dermaga untuk perahu lokal. 3 lindongan (termasuk Mendaku & Dakupang).",
+        "latitude": 3.349000,
+        "longitude": 125.479000,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 60,
+        "notes": "Sambutan hangat dari warga. Bisa homestay di rumah penduduk."
+      },
+      {
+        "id": "checkpoint-bebalang-3",
+        "name": "Pantai Pasir Putih Bebalang",
+        "description": "Pantai dengan pasir putih di pemukiman penduduk.",
+        "latitude": 3.350000,
+        "longitude": 125.480000,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 75,
+        "notes": "Spot snorkeling dengan terumbu karang yang luas di selatan pulau."
+      },
+      {
+        "id": "checkpoint-bebalang-4",
+        "name": "Tebing Terjal Bebalang",
+        "description": "Tebing-tebing terjal bagaikan menara di beberapa sudut pulau.",
+        "latitude": 3.351000,
+        "longitude": 125.481000,
+        "type": "landmark",
+        "order": 4,
+        "estimatedTime": 105,
+        "notes": "Pemandangan spektakuler. Hati-hati saat mendekati tebing."
+      }
+    ],
+    "transports": [
+      {
+        "id": "transport-bebalang-1",
+        "name": "Perahu Lokal",
+        "type": "boat",
+        "description": "Perahu lokal menuju Pulau Bebalang",
+        "price": "Rp 35.000",
+        "schedule": ["08:00", "14:00"],
+        "duration": "1 jam",
+        "bookingUrl": "",
+        "departurePoint": "Pelabuhan Manganitu",
+        "arrivalPoint": "Pulau Bebalang"
+      },
+      {
+        "id": "transport-bebalang-2",
+        "name": "Speed Boat",
+        "type": "boat",
+        "description": "Speed boat untuk perjalanan lebih cepat",
+        "price": "Rp 100.000 (sewa private)",
+        "schedule": ["Sesuai permintaan"],
+        "duration": "30 menit",
+        "bookingUrl": "",
+        "departurePoint": "Pelabuhan Manganitu",
+        "arrivalPoint": "Pulau Bebalang"
+      }
+    ],
+    "totalEstimatedTime": 240,
+    "difficulty": "medium",
+    "description": "Petualangan ke pulau eksotis dengan pantai pasir putih dan tebing terjal."
+  },
+  {
+    "id": "route-kampung-bukide",
+    "destinationId": "tourism-14",
+    "destinationName": "Kampung Bukide Timur",
+    "checkpoints": [
+      {
+        "id": "checkpoint-bukide-1",
+        "name": "Pelabuhan Tahuna",
+        "description": "Titik keberangkatan menuju Pulau Bukide.",
+        "latitude": 3.609000,
+        "longitude": 125.489000,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Perahu bermotor tempel. Perjalanan 2 jam. Bawa bekal."
+      },
+      {
+        "id": "checkpoint-bukide-2",
+        "name": "Pantai Pasir Putih Kasaraeng",
+        "description": "Pantai pasir putih sepanjang 1.300 meter.",
+        "latitude": 3.499000,
+        "longitude": 125.549000,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 120,
+        "notes": "Pantai panjang dengan pemandangan indah."
+      },
+      {
+        "id": "checkpoint-bukide-3",
+        "name": "Spot Snorkeling Bukide",
+        "description": "Terumbu karang indah dan mamalia laut di pesisir.",
+        "latitude": 3.500000,
+        "longitude": 125.550000,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 150,
+        "notes": "Perairan kaya ikan deho dan malalugis. Spot wildlife: kus-kus beruang, burung maleo, punting."
+      }
+    ],
+    "transports": [
+      {
+        "id": "transport-bukide-1",
+        "name": "Perahu Bermotor Tempel",
+        "type": "boat",
+        "description": "Perahu bermotor tempel menuju Pulau Bukide",
+        "price": "Rp 50.000",
+        "schedule": ["08:00", "14:00"],
+        "duration": "2 jam",
+        "bookingUrl": "",
+        "departurePoint": "Pelabuhan Tahuna",
+        "arrivalPoint": "Kampung Bukide Timur"
+      }
+    ],
+    "totalEstimatedTime": 300,
+    "difficulty": "hard",
+    "description": "Petualangan ke Pulau Bukide dengan pantai panjang, kuliner kue amik, dan wildlife endemik."
+  },
+  {
+    "id": "route-hotel-tahuna-beach",
+    "destinationId": "hotel-1",
+    "destinationName": "Tahuna Beach Hotel",
+    "checkpoints": [
+      {
+        "id": "checkpoint-hotel-1",
+        "name": "Bandara Naha",
+        "description": "Bandara Naha Tahuna, pintu gerbang udara Sangihe.",
+        "latitude": 3.680000,
+        "longitude": 125.520000,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Taxi dan rental mobil tersedia di bandara."
+      },
+      {
+        "id": "checkpoint-hotel-2",
+        "name": "Pusat Kota Tahuna",
+        "description": "Pusat kota dengan berbagai toko dan restoran.",
+        "latitude": 3.609167,
+        "longitude": 125.490278,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 20,
+        "notes": "Bisa singgah untuk belanja atau makan."
+      },
+      {
+        "id": "checkpoint-hotel-3",
+        "name": "Tahuna Beach Hotel",
+        "description": "Hotel di tepi pantai Boulevard Tahuna.",
+        "latitude": 3.608333,
+        "longitude": 125.487778,
+        "type": "landmark",
+        "order": 3,
+        "estimatedTime": 30,
+        "notes": "Hotel berbintang 3 dengan view laut."
+      }
+    ],
+    "transports": [
+      {
+        "id": "transport-hotel-1",
+        "name": "Taxi Bandara",
+        "type": "taxi",
+        "description": "Taxi dari Bandara Naha ke hotel",
+        "price": "Rp 100.000",
+        "schedule": ["Setiap saat"],
+        "duration": "30 menit",
+        "bookingUrl": "",
+        "departurePoint": "Bandara Naha",
+        "arrivalPoint": "Tahuna Beach Hotel"
+      }
+    ],
+    "totalEstimatedTime": 45,
     "difficulty": "easy",
-    "description": "A comprehensive walking tour through the historic heritage district."
+    "description": "Rute dari bandara ke Tahuna Beach Hotel melewati pusat kota."
+  },
+  {
+    "id": "route-kuliner-boulevard",
+    "destinationId": "culinary-1",
+    "destinationName": "Kawasan Kuliner Boulevard",
+    "checkpoints": [
+      {
+        "id": "checkpoint-culinary-1",
+        "name": "Pusat Kota Tahuna",
+        "description": "Titik awal dari pusat kota menuju Boulevard.",
+        "latitude": 3.609722,
+        "longitude": 125.490556,
+        "type": "landmark",
+        "order": 1,
+        "estimatedTime": 0,
+        "notes": "Jarak tempuh dekat, bisa jalan kaki."
+      },
+      {
+        "id": "checkpoint-culinary-2",
+        "name": "Boulevard Entrance",
+        "description": "Gerbang masuk kawasan kuliner Boulevard Tahuna.",
+        "latitude": 3.608333,
+        "longitude": 125.488889,
+        "type": "landmark",
+        "order": 2,
+        "estimatedTime": 10,
+        "notes": "Banyak pilihan rumah makan di sepanjang Boulevard."
+      },
+      {
+        "id": "checkpoint-culinary-3",
+        "name": "Area Seafood Boulevard",
+        "description": "Kawasan seafood dengan view laut.",
+        "latitude": 3.608056,
+        "longitude": 125.488000,
+        "type": "restaurant",
+        "order": 3,
+        "estimatedTime": 15,
+        "notes": "Coba ikan bakar dan seafood segar khas Sangihe."
+      }
+    ],
+    "transports": [],
+    "totalEstimatedTime": 30,
+    "difficulty": "easy",
+    "description": "Kuliner tour ke kawasan Boulevard Tahuna dengan seafood dan sunset view."
   }
 ]

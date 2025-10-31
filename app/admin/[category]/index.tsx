@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 
@@ -69,6 +69,7 @@ export default function AdminCategoryScreen() {
   };
 
   const info = categoryInfo[category!];
+  const screenTitle = info ? `Manage ${info.title}` : 'Admin';
 
   const handleAddItem = () => {
     router.push(`/admin/${category}/new`);
@@ -116,19 +117,24 @@ export default function AdminCategoryScreen() {
 
   if (!category || !info) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <EmptyState
-          icon="alert-circle-outline"
-          title="Invalid Category"
-          description="The requested category does not exist."
-        />
-      </View>
+      <>
+        <Stack.Screen options={{ title: 'Admin', headerShown: false }} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <EmptyState
+            icon="alert-circle-outline"
+            title="Invalid Category"
+            description="The requested category does not exist."
+          />
+        </View>
+      </>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
+    <>
+      <Stack.Screen options={{ title: screenTitle, headerShown: false }} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
@@ -174,6 +180,7 @@ export default function AdminCategoryScreen() {
         )}
       </View>
     </View>
+    </>
   );
 }
 

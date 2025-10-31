@@ -10,6 +10,7 @@ export type BaseItem = {
   latitude: number;
   longitude: number;
   image: string;
+  images?: string[]; // Multiple images for slider
   priceRange?: string;
   operatingHours?: string;
 };
@@ -59,5 +60,50 @@ export type LocalEdit = {
   action: 'create' | 'update' | 'delete';
   data?: Item;
   timestamp: string;
+};
+
+export type Checkpoint = {
+  id: string;
+  name: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  type: 'landmark' | 'restaurant' | 'accommodation';
+  order: number;
+  estimatedTime: number;
+  notes?: string;
+};
+
+export type Transport = {
+  id: string;
+  name: string;
+  type: 'boat' | 'bus' | 'taxi' | 'car';
+  description: string;
+  price: string;
+  schedule: string[];
+  duration: string;
+  bookingUrl?: string;
+  departurePoint: string;
+  arrivalPoint: string;
+};
+
+export type TourRoute = {
+  id: string;
+  destinationId: string;
+  destinationName: string;
+  checkpoints: Checkpoint[];
+  transports: Transport[];
+  totalEstimatedTime: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  description: string;
+};
+
+export type TourProgress = {
+  tourId: string;
+  startTime: Date;
+  endTime?: Date;
+  currentCheckpointIndex: number;
+  completedCheckpoints: string[];
+  status: 'active' | 'paused' | 'completed';
 };
 

@@ -73,6 +73,7 @@ const TrendingCard = ({ item }: { item: Item }) => {
         <PlaceholderImage 
           category={item.category}
           name={item.name}
+          image={item.image}
           style={styles.trendingImage}
         />
         <View style={styles.ratingBadge}>

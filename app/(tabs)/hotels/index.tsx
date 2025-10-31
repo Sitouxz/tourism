@@ -35,6 +35,8 @@ export default function HotelsScreen() {
       district={item.district}
       rating={item.rating}
       description={item.description}
+      image={item.image}
+      category="hotels"
       priceRange={item.priceRange}
       onPress={() => handleItemPress(item.id)}
     />

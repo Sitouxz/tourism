@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 
@@ -7,6 +7,11 @@ import { SectionTitle } from '@/components/ui/SectionTitle';
 import { getColors } from '@/constants/colors';
 import { useAppStore } from '@/lib/store';
 import { Category } from '@/types';
+
+export const options = {
+  title: 'Admin Panel',
+  headerShown: false,
+};
 
 const CategoryCard = ({ 
   category, 

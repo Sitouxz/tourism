@@ -1,16 +1,54 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Image, StyleSheet, Text } from 'react-native';
 
 interface PlaceholderImageProps {
   category: string;
   name: string;
+  image?: string;
   style?: any;
 }
+
+// Image mapping for real images
+const tourismImages: { [key: string]: any } = {
+  pulau_para: require('../../assets/images/tourism/pulau_para.jpg'),
+  mahengetang: require('../../assets/images/tourism/mahengetang.jpg'),
+  mangrove: require('../../assets/images/tourism/mangrove.jpg'),
+  boulevard: require('../../assets/images/tourism/boulevard.jpg'),
+  kadadima: require('../../assets/images/tourism/kadadima.jpg'),
+  pananualeng: require('../../assets/images/tourism/pananualeng.jpg'),
+  hesang: require('../../assets/images/tourism/hesang.jpg'),
+  lenganeng: require('../../assets/images/tourism/lenganeng.jpg'),
+  bebalang: require('../../assets/images/tourism/bebalang.jpg'),
+  palareng: require('../../assets/images/tourism/palareng.jpg'),
+  kuma: require('../../assets/images/tourism/kuma.jpg'),
+  utaurano: require('../../assets/images/tourism/utaurano.jpg'),
+  lelipang: require('../../assets/images/tourism/lelipang.jpg'),
+  bukide_timur: require('../../assets/images/tourism/bukide_timur.jpg'),
+};
+
+const hotelImages: { [key: string]: any } = {
+  tahuna_beach: require('../../assets/images/tourism/pananualeng.jpg'),
+  bintang_utara: require('../../assets/images/tourism/bebalang.jpg'),
+  hotel_hayana: require('../../assets/images/tourism/hesang.jpg'),
+  hotel_madina: require('../../assets/images/tourism/kuma.jpg'),
+  mafana_seaside_hotel: require('../../assets/images/tourism/bebalang.jpg'),
+  penginapan_setia: require('../../assets/images/tourism/hesang.jpg'),
+  wisma_melia: require('../../assets/images/tourism/kuma.jpg'),
+};
+
+const culinaryImages: { [key: string]: any } = {
+  seafood: require('../../assets/images/culinary/seafood.jpg'),
+};
+
+const eventImages: { [key: string]: any } = {
+  festival: require('../../assets/images/events/festival.jpg'),
+};
 
 export const PlaceholderImage: React.FC<PlaceholderImageProps> = ({ 
   category, 
   name, 
+  image,
   style 
 }) => {
   const getGradientColors = (category: string) => {
@@ -19,8 +57,10 @@ export const PlaceholderImage: React.FC<PlaceholderImageProps> = ({
         return ['#3B82F6', '#1D4ED8'];
       case 'culinary':
         return ['#EF4444', '#DC2626'];
+      case 'hotel':
       case 'hotels':
         return ['#10B981', '#059669'];
+      case 'event':
       case 'events':
         return ['#F59E0B', '#D97706'];
       default:
@@ -34,8 +74,10 @@ export const PlaceholderImage: React.FC<PlaceholderImageProps> = ({
         return '🏔️';
       case 'culinary':
         return '🍜';
+      case 'hotel':
       case 'hotels':
         return '🏨';
+      case 'event':
       case 'events':
         return '🎉';
       default:
@@ -43,6 +85,36 @@ export const PlaceholderImage: React.FC<PlaceholderImageProps> = ({
     }
   };
 
+  // Try to get the real image
+  const getRealImage = () => {
+    if (!image) return null;
+    
+    if (category === 'tourism' && tourismImages[image]) {
+      return tourismImages[image];
+    } else if ((category === 'hotel' || category === 'hotels') && hotelImages[image]) {
+      return hotelImages[image];
+    } else if (category === 'culinary' && culinaryImages[image]) {
+      return culinaryImages[image];
+    } else if ((category === 'event' || category === 'events') && eventImages[image]) {
+      return eventImages[image];
+    }
+    return null;
+  };
+
+  const realImage = getRealImage();
+
+  // If we have a real image, display it
+  if (realImage) {
+    return (
+      <Image
+        source={realImage}
+        style={[styles.container, style]}
+        resizeMode="cover"
+      />
+    );
+  }
+
+  // Otherwise show the gradient placeholder
   return (
     <LinearGradient
       colors={getGradientColors(category)}
@@ -77,4 +149,3 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
 });
-

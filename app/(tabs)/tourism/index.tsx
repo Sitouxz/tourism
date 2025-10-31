@@ -35,6 +35,8 @@ export default function TourismScreen() {
       district={item.district}
       rating={item.rating}
       description={item.description}
+      image={item.image}
+      category="tourism"
       priceRange={item.admissionFee}
       onPress={() => handleItemPress(item.id)}
     />

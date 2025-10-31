@@ -49,6 +49,7 @@ export const Card: React.FC<CardProps> = ({
         <PlaceholderImage 
           category={category || 'tourism'}
           name={title}
+          image={image}
           style={styles.image}
         />
         <View style={styles.ratingContainer}>

@@ -35,6 +35,8 @@ export default function EventsScreen() {
       district={item.district}
       rating={item.rating}
       description={item.description}
+      image={item.image}
+      category="events"
       onPress={() => handleItemPress(item.id)}
     />
   );

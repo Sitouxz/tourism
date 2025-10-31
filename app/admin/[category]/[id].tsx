@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
@@ -182,20 +182,26 @@ export default function AdminItemScreen() {
   };
 
   const info = categoryInfo[category!];
+  const screenTitle = info ? `${isEditing ? 'Edit' : 'Add'} ${info.title}` : 'Admin';
 
   if (!category || !info) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Text style={[styles.errorText, { color: colors.text }]}>
-          Invalid category
-        </Text>
-      </View>
+      <>
+        <Stack.Screen options={{ title: 'Admin', headerShown: false }} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <Text style={[styles.errorText, { color: colors.text }]}>
+            Invalid category
+          </Text>
+        </View>
+      </>
     );
   }
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
+    <>
+      <Stack.Screen options={{ title: screenTitle, headerShown: false }} />
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
@@ -340,6 +346,7 @@ export default function AdminItemScreen() {
         </View>
       </View>
     </ScrollView>
+    </>
   );
 }
 

@@ -2,6 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { TourProgress, TourRoute } from '../types';
 
+// Import JSON data
+import tourRoutesData from '../assets/data/tour-routes.json';
+
 interface TourStore {
   // State
   routes: TourRoute[];
@@ -46,8 +49,7 @@ export const useTourStore = create<TourStore>((set, get) => ({
         set({ routes });
       } else {
         // Load from JSON file
-        const tourRoutesModule = require('../assets/data/tour-routes.json');
-        const routes = tourRoutesModule;
+        const routes = tourRoutesData as TourRoute[];
         
         // Store in AsyncStorage for future use
         await AsyncStorage.setItem(STORAGE_KEYS.TOUR_ROUTES, JSON.stringify(routes));

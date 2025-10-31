@@ -6,17 +6,7 @@ import { getColors } from '../../constants/colors';
 import { useTourStore } from '../../lib/tour-store';
 import { Checkpoint } from '../../types';
 
-// Conditional import for react-native-maps
-let MapView: any = null;
-let Marker: any = null;
-
-try {
-  const MapsModule = require('react-native-maps');
-  MapView = MapsModule.default;
-  Marker = MapsModule.Marker;
-} catch (error) {
-  console.warn('react-native-maps not available, using fallback');
-}
+import { OpenStreetMapView } from '../../components/ui/OpenStreetMapView';
 
 export default function CheckpointDetailScreen() {
   const colorScheme = useColorScheme();
@@ -192,40 +182,15 @@ export default function CheckpointDetailScreen() {
             Location
           </Text>
           
-          {MapView ? (
-            <View style={styles.mapContainer}>
-              <MapView
-                style={styles.map}
-                initialRegion={{
-                  latitude: checkpoint.latitude,
-                  longitude: checkpoint.longitude,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-                showsUserLocation={true}
-                showsMyLocationButton={true}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: checkpoint.latitude,
-                    longitude: checkpoint.longitude,
-                  }}
-                  title={checkpoint.name}
-                  description={checkpoint.description}
-                />
-              </MapView>
-            </View>
-          ) : (
-            <View style={[styles.mapFallback, { backgroundColor: colors.surface }]}>
-              <Ionicons name="location-outline" size={48} color={colors.primary} />
-              <Text style={[styles.fallbackText, { color: colors.text }]}>
-                Map Preview
-              </Text>
-              <Text style={[styles.coordinatesText, { color: colors.textSecondary }]}>
-                {checkpoint.latitude.toFixed(6)}, {checkpoint.longitude.toFixed(6)}
-              </Text>
-            </View>
-          )}
+          <View style={styles.mapContainer}>
+            <OpenStreetMapView
+              latitude={checkpoint.latitude}
+              longitude={checkpoint.longitude}
+              title={checkpoint.name}
+              description={checkpoint.description}
+              style={styles.map}
+            />
+          </View>
 
           <TouchableOpacity 
             style={[styles.mapsButton, { backgroundColor: colors.primary }]}

@@ -2,12 +2,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { OpenStreetMapView } from '@/components/ui/OpenStreetMapView';
 
 import { LocationRow } from '@/components/ui/LocationRow';
 import { RatingBadge } from '@/components/ui/RatingBadge';
+import { ImageSlider } from '@/components/ui/ImageSlider';
 import { SectionTitle } from '@/components/ui/SectionTitle';
+import { getImagesForItem } from '@/lib/image-utils';
 import { getColors } from '@/constants/colors';
 import { useAppStore } from '@/lib/store';
+import { useTourStore } from '@/lib/tour-store';
 import { Item } from '@/types';
 
 export default function HotelDetailScreen() {
@@ -16,18 +20,29 @@ export default function HotelDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   
   const { data, isFavorite, toggleFavorite, getNearbyItems } = useAppStore();
+  const { getTourByDestinationId, loadTourRoutes } = useTourStore();
   const [item, setItem] = useState<Item | null>(null);
   const [nearbyItems, setNearbyItems] = useState<Item[]>([]);
+  const [hasTourRoute, setHasTourRoute] = useState(false);
 
   useEffect(() => {
-    if (id && data.hotel) {
-      const foundItem = data.hotel.find(item => item.id === id);
-      if (foundItem) {
-        setItem(foundItem);
-        const nearby = getNearbyItems(foundItem, 'hotel');
-        setNearbyItems(nearby);
+    const initializeData = async () => {
+      if (id && data.hotel) {
+        const foundItem = data.hotel.find(item => item.id === id);
+        if (foundItem) {
+          setItem(foundItem);
+          const nearby = getNearbyItems(foundItem, 'hotel');
+          setNearbyItems(nearby);
+          
+          // Load tour routes and check if this destination has a tour
+          await loadTourRoutes();
+          const tourRoute = getTourByDestinationId(id);
+          setHasTourRoute(!!tourRoute);
+        }
       }
-    }
+    };
+
+    initializeData();
   }, [id, data]);
 
   const handleOpenMaps = () => {
@@ -47,6 +62,27 @@ export default function HotelDetailScreen() {
 
   const handleNearbyPress = (itemId: string) => {
     router.push(`/hotels/${itemId}`);
+  };
+
+  const handleStartTour = async () => {
+    if (!id) return;
+    
+    const tourRoute = getTourByDestinationId(id);
+    if (!tourRoute) {
+      Alert.alert('No Tour Available', 'This destination does not have a guided tour route.');
+      return;
+    }
+
+    try {
+      await useTourStore.getState().startTour(tourRoute.id);
+      router.push({
+        pathname: '/tour-tracking',
+        params: { tourId: tourRoute.id }
+      });
+    } catch (error) {
+      console.error('Error starting tour:', error);
+      Alert.alert('Error', 'Failed to start tour. Please try again.');
+    }
   };
 
   if (!item) {
@@ -77,7 +113,12 @@ export default function HotelDetailScreen() {
       </View>
 
       <View style={styles.imageContainer}>
-        <Text style={styles.imagePlaceholder}>🏨</Text>
+        <ImageSlider 
+          images={getImagesForItem('hotels', item.image, item.images)}
+          category="hotels"
+          name={item.name}
+          style={styles.image}
+        />
         <View style={styles.ratingOverlay}>
           <RatingBadge rating={item.rating} size="medium" />
         </View>
@@ -91,15 +132,37 @@ export default function HotelDetailScreen() {
           <LocationRow district={item.district} />
         </View>
 
-        <View style={styles.actions}>
+        {hasTourRoute && (
           <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: colors.primary }]}
-            onPress={handleOpenMaps}
+            style={[styles.startTourButton, { backgroundColor: colors.accent }]}
+            onPress={handleStartTour}
           >
-            <Ionicons name="map" size={20} color="#FFFFFF" />
-            <Text style={styles.actionButtonText}>Open in Maps</Text>
+            <Ionicons name="compass" size={24} color="#FFFFFF" />
+            <Text style={styles.startTourButtonText}>Start Guided Tour</Text>
           </TouchableOpacity>
+        )}
 
+            <View style={styles.mapSection}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Location</Text>
+              <View style={[styles.mapContainer, { borderColor: colors.border }]}>
+                <OpenStreetMapView
+                  latitude={item.latitude}
+                  longitude={item.longitude}
+                  title={item.name}
+                  description={item.district}
+                  style={styles.map}
+                />
+                <TouchableOpacity
+                  style={[styles.mapOverlayButton, { backgroundColor: colors.primary }]}
+                  onPress={handleOpenMaps}
+                >
+                  <Ionicons name="navigate" size={16} color="#FFFFFF" />
+                  <Text style={styles.mapOverlayButtonText}>Navigate</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+        <View style={styles.actions}>
           <TouchableOpacity
             style={[
               styles.actionButton,
@@ -206,12 +269,12 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 250,
     backgroundColor: '#F3F4F6',
-    justifyContent: 'center',
-    alignItems: 'center',
     position: 'relative',
+    overflow: 'hidden',
   },
-  imagePlaceholder: {
-    fontSize: 64,
+  image: {
+    width: '100%',
+    height: '100%',
   },
   ratingOverlay: {
     position: 'absolute',
@@ -228,6 +291,66 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 8,
+  },
+  startTourButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    marginBottom: 20,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  startTourButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  mapSection: {
+    marginBottom: 24,
+  },
+  mapContainer: {
+    height: 200,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    position: 'relative',
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+  mapOverlayButton: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    gap: 6,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  mapOverlayButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
   actions: {
     flexDirection: 'row',
