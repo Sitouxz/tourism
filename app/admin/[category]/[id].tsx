@@ -9,6 +9,7 @@ import { getColors } from '@/constants/colors';
 import { saveLocalEdit } from '@/lib/data';
 import { pickImageAndConvertToBase64, base64ToImageUri } from '@/lib/image-base64';
 import { useAppStore } from '@/lib/store';
+import { useAuthStore } from '@/lib/auth-store';
 import { Category, CulinaryItem, EventItem, HotelItem, TourismItem } from '@/types';
 
 export default function AdminItemScreen() {
@@ -16,6 +17,7 @@ export default function AdminItemScreen() {
   const colors = getColors(colorScheme === 'dark');
   const { category, id } = useLocalSearchParams<{ category: Category; id: string }>();
   const { data } = useAppStore();
+  const { user } = useAuthStore();
   
   const isEditing = id !== 'new';
   const [formData, setFormData] = useState({
@@ -138,7 +140,7 @@ export default function AdminItemScreen() {
         action: isEditing ? 'update' : 'create',
         data: itemData,
         timestamp: new Date().toISOString(),
-      });
+      }, user?.uid);
 
       Alert.alert(
         'Success',

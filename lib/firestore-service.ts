@@ -24,7 +24,19 @@ const COLLECTIONS = {
   FAVORITES: 'favorites',
   RECENT: 'recent',
   ADMIN_AUTH: 'admin_auth',
+  USERS: 'users',
 } as const;
+
+/**
+ * Get user-specific collection path
+ * If userId is provided, returns user-specific path, otherwise returns global path
+ */
+function getUserCollectionPath(collectionName: string, userId?: string): string {
+  if (userId) {
+    return `users/${userId}/${collectionName}`;
+  }
+  return collectionName;
+}
 
 const ADMIN_AUTH_DOC_ID = 'default';
 
@@ -131,16 +143,17 @@ function prepareItemForSave(item: Item, isNew: boolean = false): any {
 // ========== CRUD Operations ==========
 
 /**
- * Get all items for a category
+ * Get all items for a category (user-specific)
  */
-export async function getItems(category: Category): Promise<Item[]> {
+export async function getItems(category: Category, userId?: string): Promise<Item[]> {
   try {
     if (!db) {
       throw new Error('Firebase not initialized');
     }
 
     const collectionName = getCollectionName(category);
-    const q = query(collection(db, collectionName));
+    const collectionPath = getUserCollectionPath(collectionName, userId);
+    const q = query(collection(db, collectionPath));
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
     
     const items: Item[] = [];
@@ -157,16 +170,17 @@ export async function getItems(category: Category): Promise<Item[]> {
 }
 
 /**
- * Get a single item by ID
+ * Get a single item by ID (user-specific)
  */
-export async function getItem(category: Category, id: string): Promise<Item | null> {
+export async function getItem(category: Category, id: string, userId?: string): Promise<Item | null> {
   try {
     if (!db) {
       throw new Error('Firebase not initialized');
     }
 
     const collectionName = getCollectionName(category);
-    const docRef = doc(db, collectionName, id);
+    const collectionPath = getUserCollectionPath(collectionName, userId);
+    const docRef = doc(db, collectionPath, id);
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
@@ -182,21 +196,22 @@ export async function getItem(category: Category, id: string): Promise<Item | nu
 }
 
 /**
- * Create a new item
+ * Create a new item (user-specific)
  */
-export async function createItem(category: Category, item: Item): Promise<string> {
+export async function createItem(category: Category, item: Item, userId?: string): Promise<string> {
   try {
     if (!db) {
       throw new Error('Firebase not initialized');
     }
 
     const collectionName = getCollectionName(category);
-    const itemId = item.id || doc(collection(db, collectionName)).id;
+    const collectionPath = getUserCollectionPath(collectionName, userId);
+    const itemId = item.id || doc(collection(db, collectionPath)).id;
     
     // Prepare data for save - ensure createdAt is set for new items
     const itemData = prepareItemForSave({ ...item, id: itemId }, true);
     
-    const docRef = doc(db, collectionName, itemId);
+    const docRef = doc(db, collectionPath, itemId);
     await setDoc(docRef, itemData);
     
     return itemId;
@@ -207,9 +222,9 @@ export async function createItem(category: Category, item: Item): Promise<string
 }
 
 /**
- * Update an existing item
+ * Update an existing item (user-specific)
  */
-export async function updateItem(category: Category, item: Item): Promise<void> {
+export async function updateItem(category: Category, item: Item, userId?: string): Promise<void> {
   try {
     if (!db) {
       throw new Error('Firebase not initialized');
@@ -220,12 +235,13 @@ export async function updateItem(category: Category, item: Item): Promise<void> 
     }
 
     const collectionName = getCollectionName(category);
+    const collectionPath = getUserCollectionPath(collectionName, userId);
     const itemData = prepareItemForSave(item, false);
     
     // Remove id from data (it's the document ID, not a field)
     delete itemData.id;
     
-    const docRef = doc(db, collectionName, item.id);
+    const docRef = doc(db, collectionPath, item.id);
     await updateDoc(docRef, itemData);
   } catch (error) {
     console.error(`Error updating ${category} item ${item.id}:`, error);
@@ -234,16 +250,17 @@ export async function updateItem(category: Category, item: Item): Promise<void> 
 }
 
 /**
- * Delete an item
+ * Delete an item (user-specific)
  */
-export async function deleteItem(category: Category, id: string): Promise<void> {
+export async function deleteItem(category: Category, id: string, userId?: string): Promise<void> {
   try {
     if (!db) {
       throw new Error('Firebase not initialized');
     }
 
     const collectionName = getCollectionName(category);
-    const docRef = doc(db, collectionName, id);
+    const collectionPath = getUserCollectionPath(collectionName, userId);
+    const docRef = doc(db, collectionPath, id);
     await deleteDoc(docRef);
   } catch (error) {
     console.error(`Error deleting ${category} item ${id}:`, error);
@@ -252,15 +269,15 @@ export async function deleteItem(category: Category, id: string): Promise<void> 
 }
 
 /**
- * Get all items across all categories
+ * Get all items across all categories (user-specific)
  */
-export async function getAllItems(): Promise<Record<Category, Item[]>> {
+export async function getAllItems(userId?: string): Promise<Record<Category, Item[]>> {
   try {
     const [tourism, culinary, hotels, events] = await Promise.all([
-      getItems('tourism'),
-      getItems('culinary'),
-      getItems('hotel'),
-      getItems('event'),
+      getItems('tourism', userId),
+      getItems('culinary', userId),
+      getItems('hotel', userId),
+      getItems('event', userId),
     ]);
 
     return {

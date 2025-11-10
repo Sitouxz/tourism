@@ -15,20 +15,20 @@ const DATA_KEYS = {
 } as const;
 
 /**
- * Load all data from Firestore
+ * Load all data from Firestore (user-specific)
  * Always uses Firestore data - throws error if Firestore is not available
  */
-export const loadData = async (): Promise<Record<Category, Item[]>> => {
+export const loadData = async (userId?: string): Promise<Record<Category, Item[]>> => {
   // Always load from Firestore - no fallback
-  const data = await getAllItems();
+  const data = await getAllItems(userId);
   return data;
 };
 
 /**
- * Save an item (create or update) to Firestore
+ * Save an item (create or update) to Firestore (user-specific)
  * This replaces the old saveLocalEdit function
  */
-export const saveLocalEdit = async (edit: LocalEdit): Promise<void> => {
+export const saveLocalEdit = async (edit: LocalEdit, userId?: string): Promise<void> => {
   try {
     if (!edit.data) {
       throw new Error('Item data is required');
@@ -41,14 +41,14 @@ export const saveLocalEdit = async (edit: LocalEdit): Promise<void> => {
 
     switch (edit.action) {
       case 'create':
-        await createItem(category, edit.data);
+        await createItem(category, edit.data, userId);
         break;
       case 'update':
-        await updateItem(category, edit.data);
+        await updateItem(category, edit.data, userId);
         break;
       case 'delete':
         if (edit.id) {
-          await deleteItem(category, edit.id);
+          await deleteItem(category, edit.id, userId);
         }
         break;
       default:
