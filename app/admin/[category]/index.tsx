@@ -175,7 +175,8 @@ export default function AdminCategoryScreen() {
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.list}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
+            style={styles.listContainer}
           />
         )}
       </View>
@@ -212,7 +213,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   content: {
+    flex: 1,
     padding: 20,
+  },
+  listContainer: {
+    flex: 1,
   },
   list: {
     paddingBottom: 20,

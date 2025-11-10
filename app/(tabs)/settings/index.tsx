@@ -5,7 +5,7 @@ import { Alert, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, Touchabl
 
 import { SectionTitle } from '@/components/ui/SectionTitle';
 import { getColors } from '@/constants/colors';
-import { clearAllData, getAdminAuth, setAdminAuth } from '@/lib/data';
+import { clearAllData, getAdminAuth, setAdminAuth, updateAdminPin, verifyAdminPinLocal } from '@/lib/data';
 import { useAppStore } from '@/lib/store';
 
 export default function SettingsScreen() {
@@ -14,7 +14,10 @@ export default function SettingsScreen() {
   const { isDarkMode, setDarkMode, favorites, clearFilters } = useAppStore();
   
   const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showChangePinModal, setShowChangePinModal] = useState(false);
   const [adminPin, setAdminPin] = useState('');
+  const [newPin, setNewPin] = useState('');
+  const [confirmNewPin, setConfirmNewPin] = useState('');
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
   const handleToggleTheme = () => {
@@ -62,8 +65,8 @@ export default function SettingsScreen() {
   };
 
   const handleAdminSubmit = async () => {
-    const auth = await getAdminAuth();
-    if (adminPin === auth.pin) {
+    const isValid = await verifyAdminPinLocal(adminPin);
+    if (isValid) {
       setIsAdminAuthenticated(true);
       await setAdminAuth(true);
       setShowAdminModal(false);
@@ -72,6 +75,28 @@ export default function SettingsScreen() {
     } else {
       Alert.alert('Error', 'Invalid PIN');
       setAdminPin('');
+    }
+  };
+
+  const handleChangePin = async () => {
+    if (!newPin || newPin.length < 4) {
+      Alert.alert('Error', 'PIN must be at least 4 digits');
+      return;
+    }
+
+    if (newPin !== confirmNewPin) {
+      Alert.alert('Error', 'PINs do not match');
+      return;
+    }
+
+    try {
+      await updateAdminPin(newPin);
+      Alert.alert('Success', 'PIN updated successfully');
+      setShowChangePinModal(false);
+      setNewPin('');
+      setConfirmNewPin('');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to update PIN');
     }
   };
 
@@ -186,6 +211,12 @@ export default function SettingsScreen() {
             subtitle="Manage app content"
             onPress={handleAdminAccess}
           />
+          <SettingItem
+            icon="key-outline"
+            title="Change Admin PIN"
+            subtitle="Update admin access PIN"
+            onPress={() => setShowChangePinModal(true)}
+          />
         </View>
 
         <View style={styles.section}>
@@ -246,12 +277,85 @@ export default function SettingsScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
+            </View>
           </View>
-        </View>
-      </Modal>
-    </ScrollView>
-  );
-}
+        </Modal>
+
+        {/* Change PIN Modal */}
+        <Modal
+          visible={showChangePinModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowChangePinModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                Change Admin PIN
+              </Text>
+              <TextInput
+                style={[
+                  styles.pinInput,
+                  {
+                    backgroundColor: colors.surface,
+                    color: colors.text,
+                    borderColor: colors.border,
+                  }
+                ]}
+                value={newPin}
+                onChangeText={setNewPin}
+                placeholder="New PIN (min 4 digits)"
+                placeholderTextColor={colors.textMuted}
+                secureTextEntry
+                keyboardType="numeric"
+                maxLength={10}
+              />
+              <TextInput
+                style={[
+                  styles.pinInput,
+                  {
+                    backgroundColor: colors.surface,
+                    color: colors.text,
+                    borderColor: colors.border,
+                    marginTop: 12,
+                  }
+                ]}
+                value={confirmNewPin}
+                onChangeText={setConfirmNewPin}
+                placeholder="Confirm New PIN"
+                placeholderTextColor={colors.textMuted}
+                secureTextEntry
+                keyboardType="numeric"
+                maxLength={10}
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: colors.surface }]}
+                  onPress={() => {
+                    setShowChangePinModal(false);
+                    setNewPin('');
+                    setConfirmNewPin('');
+                  }}
+                >
+                  <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: colors.primary }]}
+                  onPress={handleChangePin}
+                >
+                  <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>
+                    Change PIN
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </ScrollView>
+    );
+  }
 
 const styles = StyleSheet.create({
   container: {

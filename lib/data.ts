@@ -1,102 +1,75 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Category, Item, LocalEdit } from '../types';
-
-// Import JSON data
-import culinaryData from '../assets/data/culinary.json';
-import eventData from '../assets/data/events.json';
-import hotelData from '../assets/data/hotels.json';
-import tourismData from '../assets/data/tourism.json';
+import { 
+  getAllItems, 
+  getItems, 
+  createItem, 
+  updateItem, 
+  deleteItem 
+} from './firestore-service';
 
 const DATA_KEYS = {
   FAVORITES: 'city_explorer_favorites',
   RECENT: 'city_explorer_recent',
-  LOCAL_EDITS: 'city_explorer_local_edits',
   ADMIN_AUTH: 'city_explorer_admin_auth',
 } as const;
 
-// Base data from JSON files
-const baseData: Record<Category, Item[]> = {
-  tourism: tourismData as Item[],
-  culinary: culinaryData as Item[],
-  hotel: hotelData as Item[],
-  event: eventData as Item[],
-};
-
-// Load local edits from AsyncStorage and merge with base data
+/**
+ * Load all data from Firestore
+ * Always uses Firestore data - throws error if Firestore is not available
+ */
 export const loadData = async (): Promise<Record<Category, Item[]>> => {
-  try {
-    const localEditsJson = await AsyncStorage.getItem(DATA_KEYS.LOCAL_EDITS);
-    const localEdits: LocalEdit[] = localEditsJson ? JSON.parse(localEditsJson) : [];
-    
-    // Apply local edits to base data
-    const mergedData = { ...baseData };
-    
-    localEdits.forEach((edit) => {
-      const category = edit.data?.category || getCategoryFromId(edit.id);
-      if (!category || !mergedData[category]) return;
-      
-      switch (edit.action) {
-        case 'create':
-          if (edit.data) {
-            mergedData[category].push(edit.data);
-          }
-          break;
-        case 'update':
-          if (edit.data) {
-            const index = mergedData[category].findIndex(item => item.id === edit.id);
-            if (index !== -1) {
-              mergedData[category][index] = edit.data;
-            }
-          }
-          break;
-        case 'delete':
-          mergedData[category] = mergedData[category].filter(item => item.id !== edit.id);
-          break;
-      }
-    });
-    
-    return mergedData;
-  } catch (error) {
-    console.error('Error loading data:', error);
-    return baseData;
-  }
+  // Always load from Firestore - no fallback
+  const data = await getAllItems();
+  return data;
 };
 
-// Helper function to determine category from ID
-const getCategoryFromId = (id: string): Category | null => {
-  if (id.startsWith('tourism-')) return 'tourism';
-  if (id.startsWith('culinary-')) return 'culinary';
-  if (id.startsWith('hotel-')) return 'hotel';
-  if (id.startsWith('event-')) return 'event';
-  return null;
-};
-
-// Save local edit to AsyncStorage
+/**
+ * Save an item (create or update) to Firestore
+ * This replaces the old saveLocalEdit function
+ */
 export const saveLocalEdit = async (edit: LocalEdit): Promise<void> => {
   try {
-    const localEditsJson = await AsyncStorage.getItem(DATA_KEYS.LOCAL_EDITS);
-    const localEdits: LocalEdit[] = localEditsJson ? JSON.parse(localEditsJson) : [];
-    
-    // Remove existing edit for the same ID and add new one
-    const filteredEdits = localEdits.filter(existingEdit => existingEdit.id !== edit.id);
-    filteredEdits.push(edit);
-    
-    await AsyncStorage.setItem(DATA_KEYS.LOCAL_EDITS, JSON.stringify(filteredEdits));
+    if (!edit.data) {
+      throw new Error('Item data is required');
+    }
+
+    const category = edit.data.category;
+    if (!category) {
+      throw new Error('Category is required');
+    }
+
+    switch (edit.action) {
+      case 'create':
+        await createItem(category, edit.data);
+        break;
+      case 'update':
+        await updateItem(category, edit.data);
+        break;
+      case 'delete':
+        if (edit.id) {
+          await deleteItem(category, edit.id);
+        }
+        break;
+      default:
+        throw new Error(`Unknown action: ${edit.action}`);
+    }
   } catch (error) {
-    console.error('Error saving local edit:', error);
+    console.error('Error saving item to Firestore:', error);
+    throw error;
   }
 };
 
-// Clear all local edits (reset to base data)
+/**
+ * Clear all local edits (deprecated - items are now in Firestore)
+ * This function is kept for backward compatibility
+ */
 export const clearLocalEdits = async (): Promise<void> => {
-  try {
-    await AsyncStorage.removeItem(DATA_KEYS.LOCAL_EDITS);
-  } catch (error) {
-    console.error('Error clearing local edits:', error);
-  }
+  console.warn('clearLocalEdits is deprecated. Items are now stored in Firestore.');
 };
 
 // Favorites management
+// Using AsyncStorage for user-specific data (can work offline)
 export const getFavorites = async (): Promise<string[]> => {
   try {
     const favoritesJson = await AsyncStorage.getItem(DATA_KEYS.FAVORITES);
@@ -140,6 +113,7 @@ export const isFavorite = async (itemId: string): Promise<boolean> => {
 };
 
 // Recent items management
+// Using AsyncStorage for user-specific data (can work offline)
 export const getRecent = async (): Promise<string[]> => {
   try {
     const recentJson = await AsyncStorage.getItem(DATA_KEYS.RECENT);
@@ -161,36 +135,70 @@ export const addRecent = async (itemId: string): Promise<void> => {
 };
 
 // Admin authentication
+// PIN is stored in Firestore, session state is stored locally
+import { getAdminPin, verifyAdminPin, updateAdminPin as updateAdminPinFirestore } from './firestore-service';
+
 export const getAdminAuth = async (): Promise<{ isAuthenticated: boolean; pin: string }> => {
   try {
+    // Get PIN from Firestore
+    const pin = await getAdminPin();
+    
+    // Get session state from local storage
     const authJson = await AsyncStorage.getItem(DATA_KEYS.ADMIN_AUTH);
+    let isAuthenticated = false;
+    
     if (authJson) {
-      return JSON.parse(authJson);
+      const auth = JSON.parse(authJson);
+      isAuthenticated = auth.isAuthenticated || false;
     }
-    return { isAuthenticated: false, pin: '1234' };
+    
+    return { isAuthenticated, pin };
   } catch (error) {
     console.error('Error getting admin auth:', error);
+    // Fallback to default
     return { isAuthenticated: false, pin: '1234' };
   }
 };
 
 export const setAdminAuth = async (isAuthenticated: boolean): Promise<void> => {
   try {
-    const auth = await getAdminAuth();
-    auth.isAuthenticated = isAuthenticated;
-    await AsyncStorage.setItem(DATA_KEYS.ADMIN_AUTH, JSON.stringify(auth));
+    // Only store session state locally (not the PIN)
+    await AsyncStorage.setItem(DATA_KEYS.ADMIN_AUTH, JSON.stringify({ isAuthenticated }));
   } catch (error) {
     console.error('Error setting admin auth:', error);
   }
 };
 
-// Clear all app data
+/**
+ * Verify admin PIN against Firestore
+ */
+export const verifyAdminPinLocal = async (pin: string): Promise<boolean> => {
+  try {
+    return await verifyAdminPin(pin);
+  } catch (error) {
+    console.error('Error verifying admin PIN:', error);
+    return false;
+  }
+};
+
+/**
+ * Update admin PIN in Firestore
+ */
+export const updateAdminPin = async (newPin: string): Promise<void> => {
+  try {
+    await updateAdminPinFirestore(newPin);
+  } catch (error) {
+    console.error('Error updating admin PIN:', error);
+    throw error;
+  }
+};
+
+// Clear all app data (local storage only - Firestore data is not cleared)
 export const clearAllData = async (): Promise<void> => {
   try {
     await AsyncStorage.multiRemove([
       DATA_KEYS.FAVORITES,
       DATA_KEYS.RECENT,
-      DATA_KEYS.LOCAL_EDITS,
       DATA_KEYS.ADMIN_AUTH,
     ]);
   } catch (error) {

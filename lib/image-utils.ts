@@ -1,5 +1,7 @@
 // Helper function to get images array for an item
-// Combines local require() images with any additional image URLs
+// Combines local require() images with any additional image URLs or base64 images
+
+import { isBase64Image, base64ToImageUri } from './image-base64';
 
 const tourismImages: { [key: string]: any } = {
   pulau_para: require('../assets/images/tourism/pulau_para.jpg'),
@@ -38,30 +40,53 @@ const eventImages: { [key: string]: any } = {
   festival: require('../assets/images/events/festival.jpg'),
 };
 
+/**
+ * Convert image string to React Native Image compatible format
+ */
+function processImageString(img: string): string | any {
+  // Check if it's a base64 image
+  if (isBase64Image(img)) {
+    // Convert base64 to Image component format
+    return base64ToImageUri(img).uri;
+  }
+  return img;
+}
+
 export function getImagesForItem(category: string, image: string, images?: string[]): (string | any)[] {
   let result: (string | any)[] = [];
   
-  // Get the main image
-  let mainImage: any = null;
-  if (category === 'tourism' && tourismImages[image]) {
-    mainImage = tourismImages[image];
-  } else if ((category === 'hotel' || category === 'hotels') && hotelImages[image]) {
-    mainImage = hotelImages[image];
-  } else if (category === 'culinary' && culinaryImages[image]) {
-    mainImage = culinaryImages[image];
-  } else if ((category === 'event' || category === 'events') && eventImages[image]) {
-    mainImage = eventImages[image];
+  // Check if main image is base64 first
+  if (image && isBase64Image(image)) {
+    result.push(base64ToImageUri(image).uri);
+  } else {
+    // Try to get local image
+    let mainImage: any = null;
+    if (category === 'tourism' && tourismImages[image]) {
+      mainImage = tourismImages[image];
+    } else if ((category === 'hotel' || category === 'hotels') && hotelImages[image]) {
+      mainImage = hotelImages[image];
+    } else if (category === 'culinary' && culinaryImages[image]) {
+      mainImage = culinaryImages[image];
+    } else if ((category === 'event' || category === 'events') && eventImages[image]) {
+      mainImage = eventImages[image];
+    }
+    
+    // Add main image if found
+    if (mainImage) {
+      result.push(mainImage);
+    } else if (image && (image.startsWith('http') || image.startsWith('https'))) {
+      // It's a URL
+      result.push(image);
+    }
   }
   
-  // Add main image if found
-  if (mainImage) {
-    result.push(mainImage);
-  }
-  
-  // Add additional images from images array (URLs or local image keys)
+  // Add additional images from images array (URLs, local image keys, or base64)
   if (images && images.length > 0) {
     images.forEach(img => {
-      if (img.startsWith('http') || img.startsWith('https')) {
+      if (isBase64Image(img)) {
+        // It's a base64 image
+        result.push(base64ToImageUri(img).uri);
+      } else if (img.startsWith('http') || img.startsWith('https')) {
         // It's a URL
         result.push(img);
       } else {
@@ -78,7 +103,7 @@ export function getImagesForItem(category: string, image: string, images?: strin
         }
         if (localImg) {
           result.push(localImg);
-        } else {
+        } else if (img) {
           // If not found, add as URL (might be a placeholder)
           result.push(img);
         }
