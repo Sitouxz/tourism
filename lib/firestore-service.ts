@@ -13,7 +13,7 @@ import {
   DocumentData
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Category, Item } from '../types';
+import { Category, Item, TourRoute } from '../types';
 import { isBase64Image, base64ToImageUri } from './image-base64';
 
 const COLLECTIONS = {
@@ -25,6 +25,7 @@ const COLLECTIONS = {
   RECENT: 'recent',
   ADMIN_AUTH: 'admin_auth',
   USERS: 'users',
+  TOUR_ROUTES: 'tour_routes',
 } as const;
 
 /**
@@ -466,6 +467,167 @@ export async function verifyAdminPin(pin: string): Promise<boolean> {
   } catch (error) {
     console.error('Error verifying admin PIN:', error);
     return false;
+  }
+}
+
+// ========== Tour Routes Operations ==========
+
+/**
+ * Get all tour routes from Firestore
+ */
+export async function getTourRoutes(): Promise<TourRoute[]> {
+  try {
+    if (!db) {
+      throw new Error('Firebase not initialized');
+    }
+
+    const q = query(collection(db, COLLECTIONS.TOUR_ROUTES));
+    const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
+    
+    const routes: TourRoute[] = [];
+    querySnapshot.forEach((docSnapshot) => {
+      const data = docSnapshot.data();
+      routes.push({
+        ...data,
+        id: docSnapshot.id,
+      } as TourRoute);
+    });
+    
+    return routes;
+  } catch (error) {
+    console.error('Error getting tour routes:', error);
+    return [];
+  }
+}
+
+/**
+ * Get a single tour route by ID
+ */
+export async function getTourRoute(routeId: string): Promise<TourRoute | null> {
+  try {
+    if (!db) {
+      throw new Error('Firebase not initialized');
+    }
+
+    const docRef = doc(db, COLLECTIONS.TOUR_ROUTES, routeId);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return {
+        ...data,
+        id: docSnap.id,
+      } as TourRoute;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error getting tour route:', error);
+    return null;
+  }
+}
+
+/**
+ * Get tour route by destination ID
+ */
+export async function getTourRouteByDestinationId(destinationId: string): Promise<TourRoute | null> {
+  try {
+    if (!db) {
+      throw new Error('Firebase not initialized');
+    }
+
+    const q = query(
+      collection(db, COLLECTIONS.TOUR_ROUTES),
+      where('destinationId', '==', destinationId)
+    );
+    const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const docSnapshot = querySnapshot.docs[0];
+      const data = docSnapshot.data();
+      return {
+        ...data,
+        id: docSnapshot.id,
+      } as TourRoute;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error getting tour route by destination ID:', error);
+    return null;
+  }
+}
+
+/**
+ * Remove undefined values from an object (Firestore doesn't allow undefined)
+ */
+function removeUndefined(obj: any): any {
+  if (obj === null || obj === undefined) {
+    return null;
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => removeUndefined(item));
+  }
+  
+  if (typeof obj === 'object') {
+    const cleaned: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== undefined) {
+        cleaned[key] = removeUndefined(value);
+      }
+    }
+    return cleaned;
+  }
+  
+  return obj;
+}
+
+/**
+ * Create or update a tour route
+ */
+export async function saveTourRoute(route: TourRoute): Promise<string> {
+  try {
+    if (!db) {
+      throw new Error('Firebase not initialized');
+    }
+
+    const routeId = route.id || doc(collection(db, COLLECTIONS.TOUR_ROUTES)).id;
+    const routeData = {
+      ...route,
+      updatedAt: Timestamp.now(),
+    };
+    
+    // Remove id from data (it's the document ID)
+    const { id, ...dataToSave } = routeData;
+    
+    // Remove all undefined values (Firestore doesn't allow undefined)
+    const cleanedData = removeUndefined(dataToSave);
+    
+    const docRef = doc(db, COLLECTIONS.TOUR_ROUTES, routeId);
+    await setDoc(docRef, cleanedData, { merge: true });
+    
+    return routeId;
+  } catch (error) {
+    console.error('Error saving tour route:', error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a tour route
+ */
+export async function deleteTourRoute(routeId: string): Promise<void> {
+  try {
+    if (!db) {
+      throw new Error('Firebase not initialized');
+    }
+
+    const docRef = doc(db, COLLECTIONS.TOUR_ROUTES, routeId);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error('Error deleting tour route:', error);
+    throw error;
   }
 }
 

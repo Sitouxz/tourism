@@ -1,0 +1,53 @@
+# Dependencies (will be installed during build)
+node_modules/
+
+# Build artifacts and caches
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+*.apk
+*.aab
+
+# Large zip files
+*.zip
+my-app.zip
+
+# Log files
+*.log
+debug.log
+
+# Development files
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Debug and temporary files
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Git files
+.git/
+.gitignore
+
+# Cache directories
+.cache/
+.temp/
+tmp/
+

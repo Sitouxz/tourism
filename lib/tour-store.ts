@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { TourProgress, TourRoute } from '../types';
+import { getTourRoutes as getTourRoutesFirestore } from './firestore-service';
 
-// Import JSON data
+// Import JSON data as fallback
 import tourRoutesData from '../assets/data/tour-routes.json';
 
 interface TourStore {
@@ -13,7 +14,7 @@ interface TourStore {
   isLoading: boolean;
   
   // Actions
-  loadTourRoutes: () => Promise<void>;
+  loadTourRoutes: (forceRefresh?: boolean) => Promise<void>;
   startTour: (tourId: string) => Promise<void>;
   completeCheckpoint: (checkpointId: string) => Promise<void>;
   pauseTour: () => Promise<void>;
@@ -37,27 +38,65 @@ export const useTourStore = create<TourStore>((set, get) => ({
   tourHistory: [],
   isLoading: false,
 
-  // Load tour routes from JSON
-  loadTourRoutes: async () => {
+  // Load tour routes from Firestore (with fallback to JSON)
+  loadTourRoutes: async (forceRefresh: boolean = false) => {
     set({ isLoading: true });
     try {
-      // Try to load from AsyncStorage first
-      const storedRoutes = await AsyncStorage.getItem(STORAGE_KEYS.TOUR_ROUTES);
-      
-      if (storedRoutes) {
-        const routes = JSON.parse(storedRoutes);
-        set({ routes });
-      } else {
-        // Load from JSON file
-        const routes = tourRoutesData as TourRoute[];
+      // If force refresh, skip cache
+      if (!forceRefresh) {
+        // Try to load from AsyncStorage first (cached)
+        const storedRoutes = await AsyncStorage.getItem(STORAGE_KEYS.TOUR_ROUTES);
         
-        // Store in AsyncStorage for future use
-        await AsyncStorage.setItem(STORAGE_KEYS.TOUR_ROUTES, JSON.stringify(routes));
-        set({ routes });
+        if (storedRoutes) {
+          const routes = JSON.parse(storedRoutes);
+          console.log('📦 Loaded tour routes from cache:', routes.length);
+          set({ routes, isLoading: false });
+          
+          // Also try to refresh from Firestore in background
+          try {
+            const firestoreRoutes = await getTourRoutesFirestore();
+            if (firestoreRoutes.length > 0) {
+              console.log('📦 Refreshed tour routes from Firestore:', firestoreRoutes.length);
+              await AsyncStorage.setItem(STORAGE_KEYS.TOUR_ROUTES, JSON.stringify(firestoreRoutes));
+              set({ routes: firestoreRoutes });
+            }
+          } catch (firestoreError) {
+            console.log('⚠️ Could not refresh from Firestore, using cached routes');
+          }
+          return;
+        }
+      } else {
+        // Clear cache if forcing refresh
+        await AsyncStorage.removeItem(STORAGE_KEYS.TOUR_ROUTES);
+        console.log('🔄 Cleared tour routes cache, loading fresh from Firestore');
       }
+
+      // Try to load from Firestore
+      try {
+        const firestoreRoutes = await getTourRoutesFirestore();
+        if (firestoreRoutes.length > 0) {
+          console.log('📦 Loaded tour routes from Firestore:', firestoreRoutes.length);
+          console.log('📦 Destination IDs:', firestoreRoutes.map(r => r.destinationId));
+          
+          // Cache in AsyncStorage
+          await AsyncStorage.setItem(STORAGE_KEYS.TOUR_ROUTES, JSON.stringify(firestoreRoutes));
+          set({ routes: firestoreRoutes, isLoading: false });
+          return;
+        }
+      } catch (firestoreError) {
+        console.log('⚠️ Firestore not available, falling back to JSON');
+      }
+
+      // Fallback to JSON file
+      const routes = tourRoutesData as TourRoute[];
+      console.log('📦 Loaded tour routes from JSON (fallback):', routes.length);
+      console.log('📦 Destination IDs:', routes.map(r => r.destinationId));
+      
+      // Store in AsyncStorage for future use
+      await AsyncStorage.setItem(STORAGE_KEYS.TOUR_ROUTES, JSON.stringify(routes));
+      set({ routes, isLoading: false });
     } catch (error) {
       console.error('Error loading tour routes:', error);
-    } finally {
       set({ isLoading: false });
     }
   },
@@ -171,10 +210,27 @@ export const useTourStore = create<TourStore>((set, get) => ({
     }
   },
 
-  // Get tour route by destination ID
-  getTourByDestinationId: (destinationId: string) => {
+  // Get tour route by destination ID or name (with fallback matching)
+  getTourByDestinationId: (destinationId: string, itemName?: string) => {
     const { routes } = get();
-    return routes.find(route => route.destinationId === destinationId);
+    
+    // First try exact match by destinationId
+    let tourRoute = routes.find(route => route.destinationId === destinationId);
+    
+    // If no match and itemName provided, try name matching
+    if (!tourRoute && itemName) {
+      const itemNameLower = itemName.toLowerCase();
+      tourRoute = routes.find(route => {
+        const routeNameLower = route.destinationName.toLowerCase();
+        // Check if item name contains route name or vice versa
+        return routeNameLower.includes(itemNameLower) || 
+               itemNameLower.includes(routeNameLower) ||
+               // Also check for common variations
+               itemNameLower.replace(/\s+/g, '') === routeNameLower.replace(/\s+/g, '');
+      });
+    }
+    
+    return tourRoute;
   },
 
   // Load tour history

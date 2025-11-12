@@ -37,3 +37,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   clearAuth: () => set({ user: null, isLoading: false }),
 }));
 
+
+
+
+

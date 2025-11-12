@@ -5,7 +5,15 @@ import {
   getItems, 
   createItem, 
   updateItem, 
-  deleteItem 
+  deleteItem,
+  getFavorites as getFavoritesFirestore, 
+  addFavorite as addFavoriteFirestore, 
+  removeFavorite as removeFavoriteFirestore,
+  getRecent as getRecentFirestore, 
+  addRecent as addRecentFirestore,
+  getAdminPin, 
+  verifyAdminPin, 
+  updateAdminPin as updateAdminPinFirestore 
 } from './firestore-service';
 
 const DATA_KEYS = {
@@ -16,12 +24,38 @@ const DATA_KEYS = {
 
 /**
  * Load all data from Firestore (user-specific)
- * Always uses Firestore data - throws error if Firestore is not available
+ * Falls back to global data if user-specific data is empty
  */
 export const loadData = async (userId?: string): Promise<Record<Category, Item[]>> => {
-  // Always load from Firestore - no fallback
-  const data = await getAllItems(userId);
-  return data;
+  try {
+    // Try to load user-specific data first
+    const userData = await getAllItems(userId);
+    
+    // If user is logged in but has no data, fall back to global data
+    if (userId) {
+      const hasData = Object.values(userData).some(items => items.length > 0);
+      if (!hasData) {
+        console.log('No user-specific data found, loading global data');
+        const globalData = await getAllItems(undefined);
+        return globalData;
+      }
+    }
+    
+    return userData;
+  } catch (error) {
+    console.error('Error loading data:', error);
+    // If loading fails and we have a userId, try loading global data
+    if (userId) {
+      try {
+        console.log('Falling back to global data');
+        return await getAllItems(undefined);
+      } catch (fallbackError) {
+        console.error('Error loading global data:', fallbackError);
+        throw error; // Throw original error
+      }
+    }
+    throw error;
+  }
 };
 
 /**
@@ -30,26 +64,30 @@ export const loadData = async (userId?: string): Promise<Record<Category, Item[]
  */
 export const saveLocalEdit = async (edit: LocalEdit, userId?: string): Promise<void> => {
   try {
-    if (!edit.data) {
-      throw new Error('Item data is required');
-    }
-
-    const category = edit.data.category;
-    if (!category) {
-      throw new Error('Category is required');
-    }
-
     switch (edit.action) {
       case 'create':
-        await createItem(category, edit.data, userId);
-        break;
       case 'update':
-        await updateItem(category, edit.data, userId);
+        if (!edit.data) {
+          throw new Error('Item data is required');
+        }
+        const category = edit.data.category;
+        if (!category) {
+          throw new Error('Category is required');
+        }
+        if (edit.action === 'create') {
+          await createItem(category, edit.data, userId);
+        } else {
+          await updateItem(category, edit.data, userId);
+        }
         break;
       case 'delete':
-        if (edit.id) {
-          await deleteItem(category, edit.id, userId);
+        if (!edit.id) {
+          throw new Error('Item ID is required for delete');
         }
+        if (!edit.category) {
+          throw new Error('Category is required for delete');
+        }
+        await deleteItem(edit.category, edit.id, userId);
         break;
       default:
         throw new Error(`Unknown action: ${edit.action}`);
@@ -69,42 +107,90 @@ export const clearLocalEdits = async (): Promise<void> => {
 };
 
 // Favorites management
-// Using AsyncStorage for user-specific data (can work offline)
-export const getFavorites = async (): Promise<string[]> => {
+// Use Firestore when userId is provided, AsyncStorage otherwise
+export const getFavorites = async (userId?: string): Promise<string[]> => {
   try {
-    const favoritesJson = await AsyncStorage.getItem(DATA_KEYS.FAVORITES);
-    return favoritesJson ? JSON.parse(favoritesJson) : [];
+    if (userId) {
+      // Use Firestore for logged-in users
+      return await getFavoritesFirestore(userId);
+    } else {
+      // Use AsyncStorage for non-logged-in users
+      const favoritesJson = await AsyncStorage.getItem(DATA_KEYS.FAVORITES);
+      return favoritesJson ? JSON.parse(favoritesJson) : [];
+    }
   } catch (error) {
     console.error('Error getting favorites:', error);
-    return [];
+    // Fallback to AsyncStorage if Firestore fails
+    try {
+      const favoritesJson = await AsyncStorage.getItem(DATA_KEYS.FAVORITES);
+      return favoritesJson ? JSON.parse(favoritesJson) : [];
+    } catch {
+      return [];
+    }
   }
 };
 
-export const addFavorite = async (itemId: string): Promise<void> => {
+export const addFavorite = async (itemId: string, userId?: string): Promise<void> => {
   try {
-    const favorites = await getFavorites();
-    if (!favorites.includes(itemId)) {
-      favorites.push(itemId);
-      await AsyncStorage.setItem(DATA_KEYS.FAVORITES, JSON.stringify(favorites));
+    if (userId) {
+      // Use Firestore for logged-in users
+      await addFavoriteFirestore(userId, itemId);
+    } else {
+      // Use AsyncStorage for non-logged-in users
+      const favorites = await getFavorites();
+      if (!favorites.includes(itemId)) {
+        favorites.push(itemId);
+        await AsyncStorage.setItem(DATA_KEYS.FAVORITES, JSON.stringify(favorites));
+      }
     }
   } catch (error) {
     console.error('Error adding favorite:', error);
+    // Fallback to AsyncStorage if Firestore fails
+    if (userId) {
+      try {
+        const favoritesJson = await AsyncStorage.getItem(DATA_KEYS.FAVORITES);
+        const favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
+        if (!favorites.includes(itemId)) {
+          favorites.push(itemId);
+          await AsyncStorage.setItem(DATA_KEYS.FAVORITES, JSON.stringify(favorites));
+        }
+      } catch {
+        // Ignore fallback errors
+      }
+    }
   }
 };
 
-export const removeFavorite = async (itemId: string): Promise<void> => {
+export const removeFavorite = async (itemId: string, userId?: string): Promise<void> => {
   try {
-    const favorites = await getFavorites();
-    const updatedFavorites = favorites.filter(id => id !== itemId);
-    await AsyncStorage.setItem(DATA_KEYS.FAVORITES, JSON.stringify(updatedFavorites));
+    if (userId) {
+      // Use Firestore for logged-in users
+      await removeFavoriteFirestore(userId, itemId);
+    } else {
+      // Use AsyncStorage for non-logged-in users
+      const favorites = await getFavorites();
+      const updatedFavorites = favorites.filter(id => id !== itemId);
+      await AsyncStorage.setItem(DATA_KEYS.FAVORITES, JSON.stringify(updatedFavorites));
+    }
   } catch (error) {
     console.error('Error removing favorite:', error);
+    // Fallback to AsyncStorage if Firestore fails
+    if (userId) {
+      try {
+        const favoritesJson = await AsyncStorage.getItem(DATA_KEYS.FAVORITES);
+        const favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
+        const updatedFavorites = favorites.filter(id => id !== itemId);
+        await AsyncStorage.setItem(DATA_KEYS.FAVORITES, JSON.stringify(updatedFavorites));
+      } catch {
+        // Ignore fallback errors
+      }
+    }
   }
 };
 
-export const isFavorite = async (itemId: string): Promise<boolean> => {
+export const isFavorite = async (itemId: string, userId?: string): Promise<boolean> => {
   try {
-    const favorites = await getFavorites();
+    const favorites = await getFavorites(userId);
     return favorites.includes(itemId);
   } catch (error) {
     console.error('Error checking favorite:', error);
@@ -113,31 +199,58 @@ export const isFavorite = async (itemId: string): Promise<boolean> => {
 };
 
 // Recent items management
-// Using AsyncStorage for user-specific data (can work offline)
-export const getRecent = async (): Promise<string[]> => {
+// Use Firestore when userId is provided, AsyncStorage otherwise
+export const getRecent = async (userId?: string): Promise<string[]> => {
   try {
-    const recentJson = await AsyncStorage.getItem(DATA_KEYS.RECENT);
-    return recentJson ? JSON.parse(recentJson) : [];
+    if (userId) {
+      // Use Firestore for logged-in users
+      return await getRecentFirestore(userId);
+    } else {
+      // Use AsyncStorage for non-logged-in users
+      const recentJson = await AsyncStorage.getItem(DATA_KEYS.RECENT);
+      return recentJson ? JSON.parse(recentJson) : [];
+    }
   } catch (error) {
     console.error('Error getting recent:', error);
-    return [];
+    // Fallback to AsyncStorage if Firestore fails
+    try {
+      const recentJson = await AsyncStorage.getItem(DATA_KEYS.RECENT);
+      return recentJson ? JSON.parse(recentJson) : [];
+    } catch {
+      return [];
+    }
   }
 };
 
-export const addRecent = async (itemId: string): Promise<void> => {
+export const addRecent = async (itemId: string, userId?: string): Promise<void> => {
   try {
-    const recent = await getRecent();
-    const updatedRecent = [itemId, ...recent.filter(id => id !== itemId)].slice(0, 10);
-    await AsyncStorage.setItem(DATA_KEYS.RECENT, JSON.stringify(updatedRecent));
+    if (userId) {
+      // Use Firestore for logged-in users
+      await addRecentFirestore(userId, itemId);
+    } else {
+      // Use AsyncStorage for non-logged-in users
+      const recent = await getRecent();
+      const updatedRecent = [itemId, ...recent.filter(id => id !== itemId)].slice(0, 10);
+      await AsyncStorage.setItem(DATA_KEYS.RECENT, JSON.stringify(updatedRecent));
+    }
   } catch (error) {
     console.error('Error adding recent:', error);
+    // Fallback to AsyncStorage if Firestore fails
+    if (userId) {
+      try {
+        const recentJson = await AsyncStorage.getItem(DATA_KEYS.RECENT);
+        const recent = recentJson ? JSON.parse(recentJson) : [];
+        const updatedRecent = [itemId, ...recent.filter(id => id !== itemId)].slice(0, 10);
+        await AsyncStorage.setItem(DATA_KEYS.RECENT, JSON.stringify(updatedRecent));
+      } catch {
+        // Ignore fallback errors
+      }
+    }
   }
 };
 
 // Admin authentication
 // PIN is stored in Firestore, session state is stored locally
-import { getAdminPin, verifyAdminPin, updateAdminPin as updateAdminPinFirestore } from './firestore-service';
-
 export const getAdminAuth = async (): Promise<{ isAuthenticated: boolean; pin: string }> => {
   try {
     // Get PIN from Firestore
