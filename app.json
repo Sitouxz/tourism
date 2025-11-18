@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "City Explorer",
+    "name": "Visiting Sangihe",
     "slug": "city-explorer",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -39,12 +39,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/LOGO-KABUPATEN-KEPULAUAN-SANGIHE-SULAWESI-UTARA.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#2563EB",
+          "backgroundColor": "#FFFFFF",
+          "resizeMode": "native",
           "dark": {
-            "backgroundColor": "#1F2937"
+            "backgroundColor": "#FFFFFF"
           }
         }
       ]

@@ -24,36 +24,60 @@ const DATA_KEYS = {
 
 /**
  * Load all data from Firestore (user-specific)
- * Falls back to global data if user-specific data is empty
+ * Merges global/default data with user-specific data to ensure default content is always visible
  */
 export const loadData = async (userId?: string): Promise<Record<Category, Item[]>> => {
   try {
-    // Try to load user-specific data first
-    const userData = await getAllItems(userId);
+    // Always load global data first (default content)
+    const globalData = await getAllItems(undefined);
     
-    // If user is logged in but has no data, fall back to global data
+    // If user is logged in, also load their user-specific data and merge it
     if (userId) {
-      const hasData = Object.values(userData).some(items => items.length > 0);
-      if (!hasData) {
-        console.log('No user-specific data found, loading global data');
-        const globalData = await getAllItems(undefined);
+      try {
+        const userData = await getAllItems(userId);
+        
+        // Merge user data with global data for each category
+        // User-specific items are added to the global items
+        const mergedData: Record<Category, Item[]> = {
+          tourism: [...globalData.tourism, ...userData.tourism],
+          culinary: [...globalData.culinary, ...userData.culinary],
+          hotel: [...globalData.hotel, ...userData.hotel],
+          event: [...globalData.event, ...userData.event],
+        };
+        
+        console.log('Merged data:', {
+          global: {
+            tourism: globalData.tourism.length,
+            culinary: globalData.culinary.length,
+            hotel: globalData.hotel.length,
+            event: globalData.event.length,
+          },
+          user: {
+            tourism: userData.tourism.length,
+            culinary: userData.culinary.length,
+            hotel: userData.hotel.length,
+            event: userData.event.length,
+          },
+          merged: {
+            tourism: mergedData.tourism.length,
+            culinary: mergedData.culinary.length,
+            hotel: mergedData.hotel.length,
+            event: mergedData.event.length,
+          },
+        });
+        
+        return mergedData;
+      } catch (userDataError) {
+        console.error('Error loading user-specific data:', userDataError);
+        // If user data fails, still return global data
         return globalData;
       }
     }
     
-    return userData;
+    // If no userId, return global data only
+    return globalData;
   } catch (error) {
     console.error('Error loading data:', error);
-    // If loading fails and we have a userId, try loading global data
-    if (userId) {
-      try {
-        console.log('Falling back to global data');
-        return await getAllItems(undefined);
-      } catch (fallbackError) {
-        console.error('Error loading global data:', fallbackError);
-        throw error; // Throw original error
-      }
-    }
     throw error;
   }
 };

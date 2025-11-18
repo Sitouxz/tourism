@@ -289,7 +289,7 @@ export default function SettingsScreen() {
           </Text>
           <SettingItem
             icon="information-circle-outline"
-            title="City Explorer"
+            title="Visiting Sangihe"
             subtitle="Version 1.0.0"
           />
         </View>

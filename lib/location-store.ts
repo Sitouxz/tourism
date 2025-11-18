@@ -64,6 +64,20 @@ export const useLocationStore = create<LocationState>((set, get) => ({
       }
     }
 
+    // Check if location services are enabled
+    try {
+      const isEnabled = await Location.hasServicesEnabledAsync();
+      if (!isEnabled) {
+        set({ 
+          isLoading: false, 
+          error: 'Location services are disabled. Please enable location services in your device settings.',
+        });
+        return;
+      }
+    } catch (error) {
+      // If we can't check, continue anyway (might be a platform issue)
+    }
+
     set({ isLoading: true, error: null });
     
     try {
@@ -84,10 +98,14 @@ export const useLocationStore = create<LocationState>((set, get) => ({
         locationName,
       }));
     } catch (error: any) {
-      console.error('Error getting current location:', error);
+      // Only log error if it's not a common "unavailable" error
+      const errorMessage = error.message || 'Failed to get current location';
+      if (!errorMessage.includes('unavailable') && !errorMessage.includes('disabled')) {
+        console.error('Error getting current location:', error);
+      }
       set({ 
         isLoading: false, 
-        error: error.message || 'Failed to get current location',
+        error: errorMessage,
       });
     }
   },
@@ -148,11 +166,28 @@ export const useLocationStore = create<LocationState>((set, get) => ({
       if (!wasPermissionAsked) {
         const permissionGranted = await get().requestLocationPermission();
         if (permissionGranted) {
-          await get().getCurrentLocation();
+          // Check if location services are enabled before trying to get location
+          try {
+            const isEnabled = await Location.hasServicesEnabledAsync();
+            if (isEnabled) {
+              await get().getCurrentLocation();
+            }
+          } catch (error) {
+            // If we can't check, try anyway
+            await get().getCurrentLocation();
+          }
         }
       } else if (hasPermission) {
-        // Permission was already asked and granted, get current location
-        await get().getCurrentLocation();
+        // Permission was already asked and granted, check if services are enabled
+        try {
+          const isEnabled = await Location.hasServicesEnabledAsync();
+          if (isEnabled) {
+            await get().getCurrentLocation();
+          }
+        } catch (error) {
+          // If we can't check, try anyway
+          await get().getCurrentLocation();
+        }
       }
     } catch (error: any) {
       console.error('Error initializing location:', error);
